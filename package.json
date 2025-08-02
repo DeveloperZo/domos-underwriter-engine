@@ -13,7 +13,7 @@
     "fix-process-deal": "tsx fix-process-deal.js",
     "debug-process-deal": "tsx debug-process-deal.js",
     "debug-process": "tsx src/debug-process.ts",
-    "process-to-stage": "tsx src/process-to-stage.ts",
+    "analyze-to-stage": "tsx src/analyze-to-stage.ts",
     "process-frank": "tsx src/process-the-frank.ts",
     "test-specs": "tsx src/test-specs-engine.ts",
     "status": "tsx src/check-status.ts",

@@ -31,9 +31,36 @@ export interface Deal {
     expenseRatio: number;
     occupancyRate: number;
   };
-  status: 'incoming' | 'processing' | 'completed' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
+  _meta: {
+    stage: 'initial-intake' | 'preliminary-analysis' | 'full-underwriting' | 'ic-review' ;
+    createdAt: string;
+    updatedAt: string;
+    currentStage: number;
+    stageStatuses: {
+      [key: string]: {
+        status: 'in-progress' | 'completed' | 'rejected' | 'not-started';
+        analyzedAt: string;
+        issues?: string[];
+      }
+    };
+    analysisHistory: {
+      timestamp: string;
+      stage: number;
+      action: string;
+      result: string;
+      user?: string;
+    }[];
+    flags: {
+      hasVarianceFromMarketComps?: boolean;
+      hasIncompleteRentRoll?: boolean;
+      hasIncompleteT12?: boolean;
+      hasStructuralIssues?: boolean;
+      hasAmbiguousZoning?: boolean;
+      needsManualReview?: boolean;
+      manualReviewReason?: string;
+    };
+    lastAnalyzedAt?: string;
+    };
 }
 
 export interface TenantData {

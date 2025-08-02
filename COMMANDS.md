@@ -13,14 +13,14 @@ npm run process-deal /path/to/my-deal   # Custom path
 ```
 **Runtime**: ~30 seconds
 
-### 🎯 `npm run process-to-stage <deal-path> <stage-number>`
+### 🎯 `npm run analyze-to-stage <deal-path> <stage-number>`
 
 **Purpose**: Process deal to a specific stage (1-6) with precise control  
 **Usage**:
 ```bash
-npm run process-to-stage sample-deals 1    # Strategic Qualification only
-npm run process-to-stage sample-deals 3    # Through DueDiligence  
-npm run process-to-stage sample-deals 6    # Through Final Approval
+npm run analyze-to-stage sample-deals 1    # Strategic Qualification only
+npm run analyze-to-stage sample-deals 3    # Through DueDiligence  
+npm run analyze-to-stage sample-deals 6    # Through Final Approval
 ```
 **Stages**:
 - `1` - Strategic Qualification
@@ -49,7 +49,7 @@ npm run status sample-deals       # Show current progress
 ```bash
 npm run demo-stages sample-deals  # Full pipeline demo
 ```
-**Expected Output** (process-to-stage sample-deals 3):
+**Expected Output** (analyze-to-stage sample-deals 3):
 ```
 🎯 Domos Stage-Specific Processing
 ==================================
@@ -88,7 +88,7 @@ New stage outputs created:
 
 🔮 Next Steps
 =============
-To continue processing: npm run process-to-stage sample-deals 4
+To continue processing: npm run analyze-to-stage sample-deals 4
 To process all remaining: npm run demo-stages sample-deals
 
 ✅ Stage processing completed successfully!
@@ -127,7 +127,7 @@ To process all remaining: npm run demo-stages sample-deals
 🔮 Next Steps:
 =============
 🎯 Continue to Stage 4: Financial Underwriting
-   Command: npm run process-to-stage sample-deals 4
+   Command: npm run analyze-to-stage sample-deals 4
 🏃 Or process all remaining: npm run demo-stages sample-deals
 
 📂 File Locations:
@@ -352,13 +352,13 @@ npm run process-deal sample-deals
 npm run status sample-deals
 
 # Process to Strategic Qualification
-npm run process-to-stage sample-deals 1
+npm run analyze-to-stage sample-deals 1
 
 # Check progress
 npm run status sample-deals
 
 # Continue to DueDiligence
-npm run process-to-stage sample-deals 3
+npm run analyze-to-stage sample-deals 3
 
 # Process remaining stages
 npm run demo-stages sample-deals

@@ -114,7 +114,7 @@ async function checkDealStatus() {
       console.log('└─ No processing history found');
       console.log('\n🚀 Next Steps:');
       console.log(`   1. Parse documents: npm run process-deal ${dealPath}`);
-      console.log(`   2. Start processing: npm run process-to-stage ${dealPath} 1`);
+      console.log(`   2. Start processing: npm run analyze-to-stage ${dealPath} 1`);
       return;
     }
     
@@ -178,7 +178,7 @@ async function checkDealStatus() {
         const nextStage = currentStatus.stage + 1;
         if (nextStage <= 6) {
           console.log(`🎯 Continue to Stage ${nextStage}: ${getStageName(nextStage)}`);
-          console.log(`   Command: npm run process-to-stage ${dealPath} ${nextStage}`);
+          console.log(`   Command: npm run analyze-to-stage ${dealPath} ${nextStage}`);
         }
         console.log(`🏃 Or process all remaining: npm run demo-stages ${dealPath}`);
       }
