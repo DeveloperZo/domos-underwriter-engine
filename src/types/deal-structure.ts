@@ -32,7 +32,7 @@ export interface Deal {
     occupancyRate: number;
   };
   _meta: {
-    stage: 'initial-intake' | 'preliminary-analysis' | 'full-underwriting' | 'ic-review' ;
+    stage: 'initial-intake' | 'preliminary-analysis' | 'full-underwriting' | 'ic-review';
     createdAt: string;
     updatedAt: string;
     currentStage: number;
@@ -43,13 +43,6 @@ export interface Deal {
         issues?: string[];
       }
     };
-    analysisHistory: {
-      timestamp: string;
-      stage: number;
-      action: string;
-      result: string;
-      user?: string;
-    }[];
     flags: {
       hasVarianceFromMarketComps?: boolean;
       hasIncompleteRentRoll?: boolean;
@@ -60,7 +53,17 @@ export interface Deal {
       manualReviewReason?: string;
     };
     lastAnalyzedAt?: string;
-    };
+    analysisHistory?: {
+      timestamp: string;
+      stage: number;
+      action: string;
+      result: string;
+      user?: string;
+    }[];
+    pipelineStage?: string;
+    pipelineSubstate?: string;
+    overallStatus?: 'active' | 'rejected' | 'approved' | 'on-hold';
+  };
 }
 
 export interface TenantData {

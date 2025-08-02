@@ -3,6 +3,7 @@
 import { DealManager } from './deal-manager';
 import { StageProcessor } from './stage-processor';
 import { AuditLogger } from './audit-logger';
+import { DealPipeline } from './deal-pipeline';
 import { join } from 'path';
 import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import { AuditLog } from './types/audit-types';
@@ -16,7 +17,7 @@ interface DealMetadata {
   currentStage: number;
   stageStatuses: {
     [key: string]: {
-      status: 'pending' | 'approved' | 'rejected' | 'needs-review';
+      status: 'in-progress' | 'completed' | 'rejected' | 'not-started';
       analyzedAt: string;
       issues?: string[];
     }
@@ -42,6 +43,7 @@ async function analyzeToStage() {
   const dealManager = new DealManager();
   const stageProcessor = new StageProcessor();
   const auditLogger = new AuditLogger();
+  const dealPipeline = new DealPipeline();
   
   // Parse command line arguments
   const dealPath = process.argv[2];
@@ -91,8 +93,26 @@ async function analyzeToStage() {
       console.log(`✅ Loaded existing metadata for ${metadata.propertyName}`);
     }
 
-    // Step 3: Check current deal status and determine if analysis should proceed
-    console.log('\n🔍 Step 3: Checking deal status...');
+    // Step 3: Check pipeline status
+    console.log('\n🔍 Step 3: Checking pipeline status...');
+    let pipelineStatus = null;
+    
+    try {
+      // Attempt to find deal in pipeline using deal ID
+      const dealId = dealStructure.structuredData.deal.id;
+      pipelineStatus = await dealPipeline.getDealPipelineStatus(dealId);
+      
+      if (pipelineStatus) {
+        console.log(`✅ Deal found in pipeline: ${pipelineStatus.stage}/${pipelineStatus.substate}`);
+      } else {
+        console.log(`ℹ️ Deal not found in pipeline yet. Will be added during processing.`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ Could not determine pipeline status: ${error instanceof Error ? error.message : String(error)}`);
+    }
+    
+    // Step 4: Check current deal status and determine if analysis should proceed
+    console.log('\n🔍 Step 4: Checking deal status...');
     
     if (metadata.overallStatus === 'rejected' && !force) {
       console.log(`⚠️  Deal was previously rejected at stage ${findRejectionStage(metadata)}`);
@@ -118,8 +138,8 @@ async function analyzeToStage() {
       }
     }
     
-    // Step 4: Load audit log for stage processing
-    console.log('\n📈 Step 4: Checking audit log...');
+    // Step 5: Load audit log for stage processing
+    console.log('\n📈 Step 5: Checking audit log...');
     let auditLog = await auditLogger.loadAuditLog(dealPath);
     if (!auditLog) {
       console.log('🆕 No audit log found. Initializing new audit log...');
@@ -128,8 +148,8 @@ async function analyzeToStage() {
         ...dealStructure.structuredData.deal,
         _meta: {
           stage: 'initial-intake' as const,
-          createdAt: dealStructure.structuredData.deal.createdAt,
-          updatedAt: dealStructure.structuredData.deal.updatedAt,
+          createdAt: dealStructure.structuredData.deal._meta.createdAt,
+          updatedAt: dealStructure.structuredData.deal._meta.updatedAt,
           currentStage: 1,
           stageStatuses: {},
           analysisHistory: [],
@@ -143,14 +163,14 @@ async function analyzeToStage() {
       console.log(`✅ Loaded existing audit log (Current stage: ${auditLog.currentStage}, Status: ${auditLog.currentStatus})`);
     }
     
-    // Step 5: Process stages
-    console.log(`\n🔄 Step 5: Processing stages up to ${targetStage}...`);
+    // Step 6: Process stages
+    console.log(`\n🔄 Step 6: Processing stages up to ${targetStage}...`);
     
     // Determine starting stage (continue from current stage unless forced)
     const startStage = force ? 1 : Math.max(1, metadata.currentStage + 1);
     console.log(`Starting from stage ${startStage}`);
     
-    const stageResults = [];
+    let stagesPrepared = 0;
     let exitEarly = false;
     
     for (let stage = startStage; stage <= targetStage; stage++) {
@@ -168,58 +188,103 @@ async function analyzeToStage() {
         });
         await saveDealMetadata(dealPath, metadata);
         
-        // Process the stage
-        const result = await stageProcessor.processStage(dealPath, stage);
-        stageResults.push(result);
+        // Move deal to appropriate pipeline stage for analysis
+        try {
+          if (!pipelineStatus) {
+            // If deal not in pipeline yet, move it from processed-deals to initial intake
+            console.log(`📦 Moving deal to pipeline for stage ${stage} analysis...`);
+            const newPath = await dealPipeline.moveDealToPipeline(dealPath, 'A-initial-intake', 'in-progress');
+            // Update pipeline status
+            pipelineStatus = await dealPipeline.getDealPipelineStatus(dealStructure.structuredData.deal.id);
+            if (pipelineStatus) {
+              console.log(`📂 Deal moved to ${pipelineStatus.stage}/${pipelineStatus.substate} for analysis`);
+            }
+          } else {
+            // Deal is in pipeline, use startStageAnalysis to move to correct stage
+            const newPath = await dealPipeline.startStageAnalysis(pipelineStatus.path, stage);
+            // Update pipeline status
+            pipelineStatus = await dealPipeline.getDealPipelineStatus(dealStructure.structuredData.deal.id);
+            if (pipelineStatus) {
+              console.log(`📂 Deal moved to ${pipelineStatus.stage}/${pipelineStatus.substate} for analysis`);
+            }
+          }
+        } catch (error) {
+          console.warn(`⚠️ Pipeline update warning: ${error instanceof Error ? error.message : String(error)}`);
+        }
         
-        // Update metadata with stage result
+        // Prepare deal for agent analysis (no automatic processing)
+        console.log(`📋 Deal prepared for Stage ${stage} analysis`);
+        console.log(`🤖 Waiting for agent to analyze using stage_${stage.toString().padStart(2, '0')} specification`);
+        
+        // Update metadata to show stage is ready for analysis
         metadata.stageStatuses[stage.toString()] = {
-          status: mapDecisionToStatus(result.decision.recommendation),
+          status: 'not-started',
           analyzedAt: new Date().toISOString(),
-          issues: result.decision.recommendation !== 'ADVANCE' ? [result.decision.reasoning] : undefined
+          issues: undefined
         };
+        
+        // Update deal.json to ensure _meta structure exists
+        try {
+          const dealData = await readFile(join(dealPath, 'deal.json'), 'utf-8');
+          const deal = JSON.parse(dealData);
+          
+          // Ensure _meta structure exists
+          if (!deal._meta) {
+            deal._meta = {
+              stage: 'initial-intake',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              currentStage: stage,
+              stageStatuses: {},
+              flags: {},
+              lastAnalyzedAt: new Date().toISOString()
+            };
+          }
+          
+          // Ensure flags object exists
+          if (!deal._meta.flags) {
+            deal._meta.flags = {};
+          }
+          
+          // Update current stage
+          deal._meta.currentStage = stage;
+          deal._meta.updatedAt = new Date().toISOString();
+          
+          // Save updated deal.json
+          await writeFile(join(dealPath, 'deal.json'), JSON.stringify(deal, null, 2));
+          console.log(`✅ Updated deal.json with stage ${stage} preparation`);
+        } catch (error) {
+          console.warn(`⚠️ Could not update deal.json: ${error instanceof Error ? error.message : String(error)}`);
+        }
         
         metadata.currentStage = stage;
         metadata.lastAnalyzedAt = new Date().toISOString();
         
-        // Add to analysis history
+        // Add to analysis history that stage is ready
         metadata.analysisHistory.push({
           timestamp: new Date().toISOString(),
           stage: stage,
-          action: 'complete_analysis',
-          result: result.decision.recommendation
+          action: 'stage_prepared',
+          result: 'ready_for_agent_analysis'
         });
-        
-        // Update overall status based on decision
-        if (result.decision.recommendation === 'REJECT') {
-          metadata.overallStatus = 'rejected';
-          exitEarly = true;
-        } else if (result.decision.recommendation === 'HOLD') {
-          metadata.overallStatus = 'on-hold';
-          exitEarly = true;
-        } else if (stage === 9 && result.decision.recommendation === 'ADVANCE') {
-          metadata.overallStatus = 'approved';
-        }
         
         // Save updated metadata
         await saveDealMetadata(dealPath, metadata);
         
-        const emoji = getDecisionEmoji(result.decision.recommendation);
-        console.log(`  ${emoji} Stage ${stage}: ${result.decision.recommendation}`);
-        console.log(`     ${result.decision.reasoning}`);
+        console.log(`  📍 Stage ${stage} prepared and ready for agent analysis`);
+        console.log(`     Use MCP tools to analyze this stage with an AI agent`);
         
-        // If rejected or held, stop processing
-        if (exitEarly) {
-          const statusText = metadata.overallStatus === 'rejected' ? 'rejected' : 'on hold';
-          console.log(`\n${emoji} Deal is now ${statusText} at Stage ${stage}. Processing stopped.`);
-        }
+        // Since we're not doing automatic analysis, we stop here
+        // The agent will need to use MCP tools to complete the analysis
+        stagesPrepared++;
+        break;
         
       } catch (error) {
         console.error(`❌ Error at Stage ${stage}:`, error);
         
         // Record error in metadata
         metadata.stageStatuses[stage.toString()] = {
-          status: 'needs-review',
+          status: 'in-progress',
           analyzedAt: new Date().toISOString(),
           issues: [error instanceof Error ? error.message : String(error)]
         };
@@ -236,8 +301,8 @@ async function analyzeToStage() {
       }
     }
     
-    // Step 6: Show final status
-    console.log('\n📊 Step 6: Final Status');
+    // Step 7: Show final status
+    console.log('\n📊 Step 7: Final Status');
     console.log('=======================');
     
     // Refresh metadata after all processing
@@ -255,41 +320,38 @@ async function analyzeToStage() {
       }
     }
     
-    // Step 7: Show generated files
-    console.log('\n📂 Step 7: Generated Files');
-    console.log('==========================');
+    // Step 8: Show preparation status
+    console.log('\n📂 Step 8: Preparation Status');
+    console.log('==============================');
     
-    if (stageResults.length > 0) {
-      console.log('New stage outputs created:');
-      stageResults.forEach(result => {
-        const stageNum = result.analysis.stage.toString().padStart(2, '0');
-        console.log(`  ✅ Stage${stageNum}_${result.analysis.stageName.replace(/\s+/g, '')}.md`);
-        
-        // Show Glass Box outputs for enhanced transparency
-        console.log(`     📋 DecisionSummary.md`);
-        console.log(`     📋 InputTrace.md`);
-        console.log(`     📋 RedFlagsRaised.md`);
-        if (result.decision.recommendation !== 'ADVANCE') {
-          console.log(`     📋 OverrideNotes.md`);
-        }
-      });
+    if (stagesPrepared > 0) {
+      console.log('Stages prepared for agent analysis:');
+      console.log(`  📍 Stage ${metadata.currentStage}: ${getStageName(metadata.currentStage)} - Ready for analysis`);
+      console.log(`  📋 Use MCP tools to analyze with stage_${metadata.currentStage.toString().padStart(2, '0')} specification`);
+    } else {
+      console.log('No new stages were prepared. Deal may already be at the target stage.');
     }
     
     console.log(`\n📁 Check: ${dealPath}/Outputs/ for all stage reports`);
-    console.log(`📁 Check: ${dealPath}/AnalysisJourney/auditLog.json for audit trail`);
+    console.log(`📁 Check: ${dealPath}/auditLog.json for audit trail`);
     console.log(`📁 Check: ${dealPath}/metadata.json for deal metadata`);
     
-    // Step 8: Show next steps
+    // Show pipeline location
+    if (pipelineStatus) {
+      console.log(`\n📁 Current pipeline location: ${pipelineStatus.stage}/${pipelineStatus.substate}`);
+    }
+    
+    // Step 9: Show next steps for agent analysis
     if (metadata.overallStatus === 'active' && metadata.currentStage < 9) {
-      console.log('\n🔮 Next Steps');
-      console.log('=============');
-      console.log(`To continue analysis: npm run analyze-to-stage ${dealPath} ${metadata.currentStage + 1}`);
-      console.log(`To analyze all remaining stages: npm run analyze-to-stage ${dealPath} 9`);
+      console.log('\n🔮 Next Steps - Agent Analysis Required');
+      console.log('=======================================');
+      console.log(`🤖 Stage ${metadata.currentStage}: ${getStageName(metadata.currentStage)}`);
+      console.log(`📋 Specification: specs/stage_${metadata.currentStage.toString().padStart(2, '0')}/`);
+      console.log(`🎯 Agent should analyze using the stage specification and complete the analysis`);
     } else if (metadata.overallStatus === 'approved') {
       console.log('\n🎉 Deal Approved');
       console.log('================');
       console.log('All stages have been successfully completed and the deal is approved.');
-      console.log('Use "npm run generate-ic-deck" to create an Investment Committee presentation.');
     } else if (metadata.overallStatus === 'rejected') {
       console.log('\n❌ Deal Rejected');
       console.log('================');
@@ -299,7 +361,6 @@ async function analyzeToStage() {
       console.log('\n⏸️  Deal On Hold');
       console.log('================');
       console.log(`The deal is on hold at stage ${metadata.currentStage} and requires manual review.`);
-      console.log('Use "npm run review-hold" to provide manual review input.');
     }
     
     console.log('\n✅ Stage analysis completed successfully!');
@@ -364,13 +425,13 @@ async function saveDealMetadata(dealPath: string, metadata: DealMetadata): Promi
 /**
  * Map stage decision to metadata status
  */
-function mapDecisionToStatus(decision: string): 'pending' | 'approved' | 'rejected' | 'needs-review' {
+function mapDecisionToStatus(decision: string): 'in-progress' | 'completed' | 'rejected' | 'not-started' {
   switch (decision) {
-    case 'ADVANCE': return 'approved';
+    case 'ADVANCE': return 'completed';
     case 'REJECT': return 'rejected';
-    case 'HOLD': return 'needs-review';
-    case 'REQUEST_MORE_INFO': return 'needs-review';
-    default: return 'pending';
+    case 'HOLD': return 'in-progress';
+    case 'REQUEST_MORE_INFO': return 'in-progress';
+    default: return 'not-started';
   }
 }
 
@@ -462,7 +523,7 @@ function showUsage() {
 }
 
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && process.argv[1].endsWith('analyze-to-stage.ts')) {
   analyzeToStage().catch(console.error);
 }
 

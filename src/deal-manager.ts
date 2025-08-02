@@ -2,6 +2,7 @@ import { readFile, readdir, stat, writeFile, mkdir } from 'fs/promises';
 import { join, basename } from 'path';
 import * as XLSX from 'xlsx';
 import { Stats } from 'fs';
+import { Deal } from './types/deal-structure';
 
 export interface SourceDocument {
   fileName: string;
@@ -40,44 +41,6 @@ export interface DealStructure {
   };
   sourceDocuments: SourceDocument[];
   outputPath: string;
-}
-
-export interface Deal {
-  id: string;
-  propertyName: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  };
-  basicInfo: {
-    totalUnits: number;
-    yearBuilt: number;
-    propertyType: string;
-    askingPrice: number;
-    pricePerUnit: number;
-  };
-  lihtcInfo: {
-    currentlyLIHTC: boolean;
-    placedInServiceDate: string;
-    compliancePeriodEnd: string;
-    extendedUseEnd: string;
-    amiRestriction: number;
-    setAsideRequirement: string;
-    currentlyCompliant: boolean;
-    violationHistory: string[];
-  };
-  financialData: {
-    annualGrossRent: number;
-    netOperatingIncome: number;
-    operatingExpenses: number;
-    expenseRatio: number;
-    occupancyRate: number;
-  };
-  status: 'incoming' | 'processing' | 'completed' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface Tenant {
@@ -302,9 +265,15 @@ export class DealManager {
         expenseRatio: 0,
         occupancyRate: 0
       },
-      status: 'incoming',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      _meta: {
+        stage: 'initial-intake' as const,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        currentStage: 0,
+        stageStatuses: {},
+        flags: {},
+        overallStatus: 'active' as const
+      }
     };
     
     return deal;

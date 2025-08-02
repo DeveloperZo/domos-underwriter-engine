@@ -7,7 +7,7 @@
  * node due-diligence-to-testme.js
  */
 
-import { DealManager } from './src/deal-manager.js';
+import { DealManager } from '../src/deal-manager.js';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 

@@ -1,9 +1,9 @@
 # API Documentation
 
-## Overview
-This document describes the APIs available within the Domos Underwriter Engine for integration and automation purposes.
+## Purpose
+This document describes the core APIs of the Domos Underwriter Engine for integration with other systems, providing programmatic access to deal creation, analysis, and reporting functions.
 
-## Core APIs
+## API Endpoints
 
 ### Deal Management API
 
@@ -13,7 +13,7 @@ POST /api/deals
 ```
 Creates a new deal in the system and initializes the stage workflow.
 
-**Request Body:**
+**Request:**
 ```json
 {
   "property_name": "string",
@@ -23,6 +23,16 @@ Creates a new deal in the system and initializes the stage workflow.
     "units": "integer",
     "location": "string"
   }
+}
+```
+
+**Response:**
+```json
+{
+  "deal_id": "string",
+  "status": "created",
+  "stage": 1,
+  "created_at": "timestamp"
 }
 ```
 
@@ -86,14 +96,50 @@ GET /api/reports/summary/{deal_id}
 ```
 Exports comprehensive deal summary reports.
 
-## Authentication
-All API endpoints require authentication using JWT tokens.
+## Implementation Notes
+- All endpoints return standard HTTP status codes
+- Responses use consistent JSON structure
+- Authentication required for all endpoints
+- Rate limiting applies (300 requests per minute per client)
 
-## Rate Limiting
-API calls are rate limited to ensure system performance.
+## Integration Examples
 
-## Error Handling
-Standardized error responses with appropriate HTTP status codes.
+### Create Deal and Run Analysis
+```javascript
+// Step 1: Create a new deal
+const dealResponse = await fetch('/api/deals', {
+  method: 'POST',
+  body: JSON.stringify({
+    property_name: "The Franklin",
+    deal_date: "2025-07-01",
+    initial_data: {
+      property_type: "multifamily",
+      units: 120,
+      location: "Chicago, IL"
+    }
+  })
+});
 
-## Webhooks
-Available webhook endpoints for system integration and notifications.
+const { deal_id } = await dealResponse.json();
+
+// Step 2: Run financial analysis
+const analysisResponse = await fetch('/api/analysis/financial', {
+  method: 'POST',
+  body: JSON.stringify({
+    deal_id,
+    assumptions: {
+      cap_rate: 5.2,
+      vacancy: 3.5
+    }
+  })
+});
+```
+
+---
+
+**Document Metadata**  
+**Last Updated**: July 4, 2025  
+**Document Version**: 1.0  
+**Owner**: zAITK (Zo AI Tool Kit) 
+**Status**: Active  
+**Related Issues**: #143, #189

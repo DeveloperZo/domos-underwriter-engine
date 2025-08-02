@@ -1,7 +1,7 @@
 // Debug script for the process-deal command
 // This script adds additional logging to understand the execution flow
 
-import { DealManager } from './src/deal-manager.js';
+import { DealManager } from '../src/deal-manager.js';
 import { join, basename } from 'path';
 import { existsSync, readdirSync, statSync } from 'fs';
 

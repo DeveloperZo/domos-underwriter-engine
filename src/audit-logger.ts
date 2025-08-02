@@ -30,7 +30,7 @@ export class AuditLogger {
    */
   async loadAuditLog(dealPath: string): Promise<AuditLog | null> {
     try {
-      const auditLogPath = join(dealPath, 'AnalysisJourney', 'auditLog.json');
+      const auditLogPath = join(dealPath, 'auditLog.json');
       const data = await readFile(auditLogPath, 'utf-8');
       return JSON.parse(data) as AuditLog;
     } catch (error) {
@@ -130,7 +130,7 @@ export class AuditLogger {
    * Save audit log to file
    */
   private async saveAuditLog(dealPath: string, auditLog: AuditLog): Promise<void> {
-    const auditLogPath = join(dealPath, 'AnalysisJourney', 'auditLog.json');
+    const auditLogPath = join(dealPath, 'auditLog.json');
     await writeFile(auditLogPath, JSON.stringify(auditLog, null, 2));
   }
   
@@ -139,7 +139,7 @@ export class AuditLogger {
    */
   async auditLogExists(dealPath: string): Promise<boolean> {
     try {
-      const auditLogPath = join(dealPath, 'AnalysisJourney', 'auditLog.json');
+      const auditLogPath = join(dealPath, 'auditLog.json');
       await access(auditLogPath);
       return true;
     } catch {
