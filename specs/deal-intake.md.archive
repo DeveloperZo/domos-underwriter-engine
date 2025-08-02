@@ -1,0 +1,131 @@
+# Deal Intake Specification
+
+## Purpose
+Validate incoming deals and determine if they meet basic criteria for LIHTC preservation analysis.
+
+## Required Data Elements
+
+### Core Property Information
+- [ ] **Property Name**: Clear, unique identifier
+- [ ] **Address**: Full street address including city, state, ZIP
+- [ ] **Unit Count**: Total units and bedroom mix breakdown
+- [ ] **Year Built**: Construction year for age assessment
+- [ ] **Property Type**: Garden, mid-rise, high-rise, townhomes
+
+### Financial Data Requirements
+- [ ] **Asking Price**: Total acquisition cost
+- [ ] **Current Rents**: By unit type (1BR, 2BR, 3BR, etc.)
+- [ ] **Operating Statement**: Last 12 months (T12)
+- [ ] **Rent Roll**: Current tenant list with rents and lease terms
+- [ ] **Capital Needs Assessment**: Major repairs/improvements needed
+
+### LIHTC Compliance Information
+- [ ] **LIHTC Status**: Currently under LIHTC program (Y/N)
+- [ ] **Compliance Period**: Years remaining in affordability period
+- [ ] **AMI Restrictions**: Percentage of Area Median Income limits
+- [ ] **Affordability Expiration**: Exact date when restrictions end
+- [ ] **Current Compliance**: Any violations or issues
+
+## Analysis Process
+
+### Step 1: Data Completeness Check
+Calculate completeness score based on required elements:
+- Critical elements missing = REJECT
+- 80%+ complete = PROCEED
+- 60-79% complete = REQUEST_MORE_INFO
+- <60% complete = REJECT
+
+### Step 2: Basic Financial Screening
+Calculate initial metrics:
+```
+Price Per Unit = Asking Price / Total Units
+Gross Rent Multiplier = Asking Price / (Annual Gross Rent)
+Average Rent = Total Monthly Rent / Total Units
+```
+
+### Step 3: LIHTC Preservation Eligibility
+- Must be currently LIHTC property
+- Must have 2+ years remaining in compliance period
+- Must be approaching end of affordability (within 10 years ideal)
+
+### Step 4: Market Reasonableness
+- Price per unit should be $50k-$150k range
+- GRM should be 8-15x range
+- Current rents should be reasonable for market
+
+## Decision Criteria
+
+### PROCEED Requirements
+- [ ] All critical data elements present
+- [ ] LIHTC property with 2+ years remaining
+- [ ] Financial metrics in reasonable ranges
+- [ ] Clear preservation opportunity
+
+### REJECT Triggers
+- [ ] Not currently LIHTC property
+- [ ] Less than 2 years compliance remaining
+- [ ] Price per unit >$150k or <$30k
+- [ ] GRM >20x or <5x
+- [ ] Major data gaps with unresponsive seller
+
+### REQUEST_MORE_INFO Triggers
+- [ ] Minor data gaps that could be filled
+- [ ] Unclear LIHTC status or compliance period
+- [ ] Reasonable financial metrics but need validation
+- [ ] Seller responsive and willing to provide additional info
+
+## Output Format
+
+Create `intake-analysis.json`:
+
+```json
+{
+  "dealId": "string",
+  "timestamp": "ISO-8601",
+  "completenessScore": 0-100,
+  "basicMetrics": {
+    "pricePerUnit": number,
+    "grossRentMultiplier": number,
+    "averageRent": number,
+    "totalUnits": number
+  },
+  "lihtcStatus": {
+    "currentlyLIHTC": boolean,
+    "yearsRemaining": number,
+    "amiRestriction": number,
+    "complianceIssues": "string[]"
+  },
+  "missingElements": "string[]",
+  "redFlags": "string[]",
+  "recommendation": "PROCEED|REJECT|REQUEST_MORE_INFO",
+  "reasoning": "string",
+  "nextSteps": "string[]"
+}
+```
+
+## Quality Control
+
+### Validation Checks
+- All monetary values are positive numbers
+- Dates are valid and in future (for compliance expiration)
+- Unit counts add up correctly
+- Percentages are between 0-100
+
+### Common Issues to Flag
+- Asking price significantly above/below market comparables
+- Rent roll dates older than 30 days
+- Operating statement not recent (>90 days old)
+- Missing critical compliance documentation
+- Seller urgency that might indicate problems
+
+## Notes for Agent Processing
+- Be conservative in initial screening - better to request more info than proceed with gaps
+- Document all assumptions made during analysis
+- Flag any data inconsistencies between documents
+- Consider market context (urban vs suburban, geographic region)
+- Pay special attention to compliance timeline - this drives investment urgency
+
+## Success Criteria
+- 95%+ of PROCEED recommendations should complete full analysis successfully
+- <5% of deals should require re-work due to inadequate initial screening
+- Clear documentation allows any team member to understand decision rationale

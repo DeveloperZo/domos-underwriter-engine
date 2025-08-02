@@ -1,0 +1,54 @@
+{
+  "name": "domos-underwriter-engine",
+  "version": "0.1.0",
+  "description": "AI-powered LIHTC preservation deal evaluation system",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "process": "tsx src/process-deal.ts",
+    "process-deal": "tsx src/process-deal.ts",
+    "process-to-stage": "tsx src/process-to-stage.ts",
+    "process-frank": "tsx src/process-the-frank.ts",
+    "test-specs": "tsx src/test-specs-engine.ts",
+    "status": "tsx src/check-status.ts",
+    "demo-stages": "tsx src/demo-stages.ts",
+    "monitor": "tsx src/monitor.ts",
+    "help": "echo \"📝 See COMMANDS.md for detailed usage examples\"",
+    "test": "echo \"Tests coming soon\"",
+    "setup": "npm install && npm run build",
+    "mcp": "tsx src/mcp-server.ts",
+    "mcp-tools": "tsx src/mcp-server.ts tools",
+    "mcp-process": "tsx src/mcp-server.ts processDeal",
+    "mcp-analyze": "tsx src/mcp-server.ts analyzeStage",
+    "demo-mcp": "tsx src/demo-mcp.ts",
+    "test-mcp": "tsx src/test-mcp.ts"
+  },
+  "keywords": [
+    "lihtc",
+    "real-estate",
+    "underwriting", 
+    "ai",
+    "preservation"
+  ],
+  "author": "Domos Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "tsx": "^4.7.0",
+    "@types/node": "^20.0.0",
+    "chokidar": "^3.5.3",
+    "fs-extra": "^11.2.0",
+    "marked": "^12.0.0",
+    "date-fns": "^3.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/fs-extra": "^11.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

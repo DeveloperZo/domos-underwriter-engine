@@ -1,0 +1,37 @@
+{
+  "id": "the-frank-1754076300000",
+  "propertyName": "The Frank",
+  "address": {
+    "street": "TBD - Extract from lease documents",
+    "city": "Atlanta",
+    "state": "GA",
+    "zip": "TBD"
+  },
+  "basicInfo": {
+    "totalUnits": 45,
+    "yearBuilt": 1960,
+    "propertyType": "Mixed-Use Residential",
+    "askingPrice": 0,
+    "pricePerUnit": 0
+  },
+  "lihtcInfo": {
+    "currentlyLIHTC": false,
+    "placedInServiceDate": "TBD",
+    "compliancePeriodEnd": "TBD",
+    "extendedUseEnd": "TBD",
+    "amiRestriction": 60,
+    "setAsideRequirement": "20% at 50% AMI",
+    "currentlyCompliant": false,
+    "violationHistory": []
+  },
+  "financialData": {
+    "annualGrossRent": 0,
+    "netOperatingIncome": 0,
+    "operatingExpenses": 0,
+    "expenseRatio": 0,
+    "occupancyRate": 0
+  },
+  "status": "incoming",
+  "createdAt": "2025-08-01T19:25:00.000Z",
+  "updatedAt": "2025-08-01T19:25:00.000Z"
+}

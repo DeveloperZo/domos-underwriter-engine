@@ -1,0 +1,166 @@
+# Gate A: Initial Intake Specification
+
+## Purpose
+First contact screening to determine if a deal meets Domos' basic investment criteria before allocating significant analysis resources.
+
+## Gate Objectives
+- **Filter out** deals that clearly don't fit our strategy
+- **Capture essential** deal information for tracking
+- **Route qualified deals** to preliminary analysis
+- **Maintain relationships** with quality deal sources
+
+## Required Information
+
+### Deal Source
+- [ ] **Source Type**: Broker, Seller Direct, Internal Origination, Referral
+- [ ] **Contact Information**: Name, company, phone, email
+- [ ] **Source Relationship**: First-time vs repeat, track record
+- [ ] **Urgency/Timeline**: When does seller need response?
+
+### Basic Property Information
+- [ ] **Property Name**: Clear identifier
+- [ ] **Address**: Street, city, state (sufficient for market check)
+- [ ] **Unit Count**: Total units
+- [ ] **Asset Class**: Multifamily (garden, mid-rise, high-rise)
+- [ ] **Year Built**: For initial age assessment
+
+### Deal Structure Basics
+- [ ] **Asking Price**: Total acquisition cost
+- [ ] **Price per Unit**: Basic efficiency metric
+- [ ] **Deal Size Category**: <$10M, $10-50M, >$50M
+- [ ] **Expected Closing**: Timeline pressure assessment
+
+### LIHTC/Affordability Status
+- [ ] **Current LIHTC**: Yes/No/Unknown
+- [ ] **Affordability Restrictions**: Type and expiration
+- [ ] **Preservation Opportunity**: Why now?
+
+## Screening Criteria
+
+### Geographic Requirements
+✅ **PASS**: Target markets (Columbus, Cincinnati, Cleveland, Indianapolis, etc.)
+❌ **FAIL**: Outside target markets or markets we don't understand
+
+### Asset Class Requirements  
+✅ **PASS**: Multifamily 50+ units, garden/mid-rise/high-rise
+❌ **FAIL**: Single family, commercial, mixed-use, manufactured housing
+
+### Deal Size Requirements
+✅ **PASS**: $5M - $100M total deal size
+❌ **FAIL**: <$5M (too small) or >$100M (too large for current capacity)
+
+### LIHTC/Mission Alignment
+✅ **PASS**: Current or former LIHTC, other affordable housing
+✅ **CONDITIONAL**: Market rate with conversion potential
+❌ **FAIL**: Luxury housing with no affordable component
+
+### Basic Financial Screening
+✅ **PASS**: Price per unit $30k - $200k (varies by market)
+❌ **FAIL**: Outside reasonable price per unit range for market
+
+## Decision Matrix
+
+### ADVANCE TO PRELIMINARY ANALYSIS
+Requirements:
+- [ ] All basic screening criteria met
+- [ ] Deal source is responsive and professional
+- [ ] Timeline allows for proper underwriting
+- [ ] Fits within current pipeline capacity
+
+### POLITE REJECTION
+Reasons:
+- [ ] Outside target geography or asset class
+- [ ] Deal size outside parameters
+- [ ] No affordable housing angle
+- [ ] Price obviously too high/low for market
+
+### REQUEST MORE INFORMATION
+When:
+- [ ] Close to criteria but missing key details
+- [ ] Good relationship with source, worth exploring
+- [ ] Unique deal that might warrant exception
+
+## Process Flow
+
+### Step 1: Initial Contact (Same Day)
+1. Log deal in CRM/pipeline system
+2. Acknowledge receipt to source
+3. Request basic information if missing
+
+### Step 2: Basic Screening (Within 24 Hours)
+1. Market check: Is this a target market?
+2. Asset class check: Does this fit our focus?
+3. Size check: Can we handle this deal size?
+4. Mission check: Any affordable housing angle?
+
+### Step 3: Decision & Communication (Within 48 Hours)
+1. Make advance/reject/request more info decision
+2. Communicate decision to deal source
+3. If advancing: assign to analyst for preliminary analysis
+4. Update CRM with decision and rationale
+
+## Output Format
+
+Create `intake-decision.json`:
+
+```json
+{
+  "dealId": "string",
+  "timestamp": "ISO-8601",
+  "source": {
+    "type": "BROKER|SELLER_DIRECT|INTERNAL|REFERRAL",
+    "contact": "string",
+    "relationship": "FIRST_TIME|REPEAT|PREFERRED",
+    "urgency": "LOW|MEDIUM|HIGH"
+  },
+  "basicInfo": {
+    "propertyName": "string",
+    "address": "string",
+    "unitCount": "number",
+    "askingPrice": "number",
+    "pricePerUnit": "number"
+  },
+  "screeningResults": {
+    "geography": "PASS|FAIL",
+    "assetClass": "PASS|FAIL", 
+    "dealSize": "PASS|FAIL",
+    "missionAlignment": "PASS|CONDITIONAL|FAIL",
+    "basicFinancials": "PASS|FAIL"
+  },
+  "decision": "ADVANCE|REJECT|REQUEST_MORE_INFO",
+  "reasoning": "string",
+  "nextSteps": "string[]",
+  "assignedAnalyst": "string|null",
+  "priorityLevel": "LOW|MEDIUM|HIGH"
+}
+```
+
+## Quality Control
+
+### Response Time Targets
+- **Acknowledgment**: Same day
+- **Decision**: Within 48 hours
+- **Communication**: Professional and timely
+
+### Relationship Management
+- Maintain positive relationships even with rejected deals
+- Provide brief, honest feedback when possible
+- Track source quality for future prioritization
+
+### Pipeline Management
+- Don't advance more deals than team can handle
+- Balance deal quality with source relationships
+- Consider market timing and competition
+
+## Success Metrics
+- **Pass Rate**: 60-80% of deals should advance (too high = not selective enough)
+- **Source Satisfaction**: Maintain good relationships with quality sources
+- **Pipeline Flow**: Steady flow to preliminary analysis without overwhelming team
+- **False Positives**: <10% of advanced deals should fail basic preliminary analysis
+
+## Notes for Agent Processing
+- Be conservative but not dismissive
+- When in doubt, request more information rather than reject
+- Consider source relationship in borderline decisions
+- Document all assumptions and decision reasoning
+- Flag any deals that might be exceptions to standard criteria

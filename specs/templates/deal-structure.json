@@ -1,0 +1,81 @@
+{
+  "id": "",
+  "propertyName": "",
+  "address": {
+    "street": "",
+    "city": "",
+    "state": "",
+    "zip": ""
+  },
+  "basicInfo": {
+    "totalUnits": 0,
+    "yearBuilt": 0,
+    "propertyType": "",
+    "askingPrice": 0,
+    "pricePerUnit": 0
+  },
+  "unitMix": {
+    "studio": 0,
+    "oneBedroom": 0,
+    "twoBedroom": 0,
+    "threeBedroom": 0,
+    "fourBedroom": 0
+  },
+  "currentRents": {
+    "studio": 0,
+    "oneBedroom": 0,
+    "twoBedroom": 0,
+    "threeBedroom": 0,
+    "fourBedroom": 0
+  },
+  "lihtcInfo": {
+    "currentlyLIHTC": false,
+    "placedInServiceDate": "",
+    "compliancePeriodEnd": "",
+    "extendedUseEnd": "",
+    "amiRestriction": 0,
+    "setAsideRequirement": "",
+    "currentlyCompliant": false,
+    "violationHistory": []
+  },
+  "financialData": {
+    "annualGrossRent": 0,
+    "netOperatingIncome": 0,
+    "operatingExpenses": 0,
+    "expenseRatio": 0,
+    "occupancyRate": 0
+  },
+  "documents": {
+    "rentRoll": {
+      "provided": false,
+      "date": "",
+      "filename": ""
+    },
+    "operatingStatement": {
+      "provided": false,
+      "period": "",
+      "filename": ""
+    },
+    "capitalNeedsAssessment": {
+      "provided": false,
+      "date": "",
+      "filename": ""
+    },
+    "lihtcDocuments": {
+      "provided": false,
+      "documents": []
+    }
+  },
+  "sellerInfo": {
+    "name": "",
+    "contact": "",
+    "motivation": "",
+    "timeline": "",
+    "flexibility": ""
+  },
+  "createdAt": "",
+  "updatedAt": "",
+  "status": "incoming",
+  "assignedAnalyst": "",
+  "notes": []
+}

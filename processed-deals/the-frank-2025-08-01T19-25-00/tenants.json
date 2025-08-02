@@ -1,0 +1,67 @@
+[
+  {
+    "unitNumber": "1",
+    "leaseStart": "TBD",
+    "leaseEnd": "TBD",
+    "monthlyRent": 0,
+    "securityDeposit": 0,
+    "tenantName": "TBD - Extract from rent roll",
+    "occupancyStatus": "occupied",
+    "unitType": "TBD",
+    "sqft": 0,
+    "lihtcQualified": false,
+    "amiLevel": null
+  },
+  {
+    "unitNumber": "2",
+    "leaseStart": "TBD",
+    "leaseEnd": "TBD",
+    "monthlyRent": 0,
+    "securityDeposit": 0,
+    "tenantName": "TBD - Extract from rent roll",
+    "occupancyStatus": "occupied",
+    "unitType": "TBD",
+    "sqft": 0,
+    "lihtcQualified": false,
+    "amiLevel": null
+  },
+  {
+    "unitNumber": "3",
+    "leaseStart": "TBD",
+    "leaseEnd": "TBD",
+    "monthlyRent": 0,
+    "securityDeposit": 0,
+    "tenantName": "TBD - Extract from rent roll",
+    "occupancyStatus": "occupied",
+    "unitType": "TBD",
+    "sqft": 0,
+    "lihtcQualified": false,
+    "amiLevel": null
+  },
+  {
+    "unitNumber": "4",
+    "leaseStart": "TBD",
+    "leaseEnd": "TBD",
+    "monthlyRent": 0,
+    "securityDeposit": 0,
+    "tenantName": "TBD - Extract from rent roll",
+    "occupancyStatus": "occupied",
+    "unitType": "TBD",
+    "sqft": 0,
+    "lihtcQualified": false,
+    "amiLevel": null
+  },
+  {
+    "unitNumber": "5",
+    "leaseStart": "TBD",
+    "leaseEnd": "TBD",
+    "monthlyRent": 0,
+    "securityDeposit": 0,
+    "tenantName": "TBD - Extract from rent roll",
+    "occupancyStatus": "occupied",
+    "unitType": "TBD",
+    "sqft": 0,
+    "lihtcQualified": false,
+    "amiLevel": null
+  }
+]

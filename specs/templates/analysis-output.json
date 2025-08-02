@@ -1,0 +1,46 @@
+{
+  "dealId": "",
+  "analysisType": "",
+  "timestamp": "",
+  "analyst": "",
+  "stage": "",
+  "inputs": {
+    "dataSource": "",
+    "assumptions": [],
+    "methodology": ""
+  },
+  "results": {
+    "summary": "",
+    "keyFindings": [],
+    "metrics": {},
+    "calculations": {}
+  },
+  "risks": {
+    "identified": [],
+    "severity": {},
+    "mitigation": {}
+  },
+  "recommendations": {
+    "primary": "",
+    "conditions": [],
+    "nextSteps": []
+  },
+  "confidence": {
+    "level": 0,
+    "factors": [],
+    "dataQuality": ""
+  },
+  "flags": {
+    "redFlags": [],
+    "yellowFlags": [],
+    "informationalFlags": []
+  },
+  "attachments": {
+    "models": [],
+    "reports": [],
+    "supporting": []
+  },
+  "reviewRequired": false,
+  "approvedBy": "",
+  "version": "1.0"
+}
