@@ -22,9 +22,9 @@ npm run demo-mcp
 
 ### 1. Process Deal
 ```bash
-npm run mcp-process "sample-deals/Due Diligence"
+npm run mcp-process "sample-deals/DueDiligence"
 ```
-- Reads due diligence documents
+- Reads DueDiligence documents
 - Creates structured deal.json, tenants.json, financialSummary.json
 - Initializes AnalysisJourney.md
 - Returns path to processed deal

@@ -90,7 +90,7 @@
 ## Implementation Plan
 
 **Transaction Timeline**
-- **Due Diligence**: [XX] days
+- **DueDiligence**: [XX] days
 - **Financing**: [XX] days
 - **Closing**: [Date]
 - **Stabilization**: [XX] months

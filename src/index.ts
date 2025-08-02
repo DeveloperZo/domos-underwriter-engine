@@ -375,9 +375,9 @@ export class DealProcessor {
     const nextStepsMap: Record<string, string[]> = {
       'A-initial-intake': ['Gather additional financial documents', 'Schedule property tour', 'Prepare for preliminary analysis'],
       'B-preliminary-analysis': ['Commission property condition assessment', 'Obtain detailed rent rolls', 'Prepare for full underwriting'],
-      'C-full-underwriting': ['Finalize financing terms', 'Complete due diligence', 'Prepare IC presentation'],
+      'C-full-underwriting': ['Finalize financing terms', 'Complete DueDiligence', 'Prepare IC presentation'],
       'D-ic-review': ['Address IC feedback', 'Prepare LOI documentation', 'Coordinate with legal team'],
-      'E-loi-psa': ['Execute purchase agreement', 'Coordinate due diligence period', 'Prepare for closing'],
+      'E-loi-psa': ['Execute purchase agreement', 'Coordinate DueDiligence period', 'Prepare for closing'],
       'F-final-approval': ['Finalize all documentation', 'Coordinate closing logistics', 'Prepare transition plan'],
       'G-closing': ['Complete transaction', 'Transfer property management', 'Begin asset management']
     };

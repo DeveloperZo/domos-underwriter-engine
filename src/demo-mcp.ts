@@ -22,7 +22,7 @@ async function runMCPDemo() {
     // Step 2: Process the sample deal
     console.log('🔄 Step 1: Processing sample deal...');
     const processResult = await server.handleToolCall('processDeal', {
-      dueDiligencePath: 'sample-deals/Due Diligence'
+      dueDiligencePath: 'sample-deals/DueDiligence'
     });
     console.log(processResult.content[0].text);
     console.log();
@@ -113,7 +113,7 @@ async function runMCPDemo() {
   } catch (error) {
     console.error('❌ Demo failed:', error);
     console.log('\n🔍 Troubleshooting:');
-    console.log('• Make sure sample-deals/Due Diligence exists');
+    console.log('• Make sure sample-deals/DueDiligence exists');
     console.log('• Check that all dependencies are installed (npm install)');
     console.log('• Verify TypeScript compilation (npm run build)');
   }

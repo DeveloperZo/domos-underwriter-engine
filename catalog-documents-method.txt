@@ -1,0 +1,79 @@
+  /**
+   * Catalog all source documents from the DueDiligence folder
+   */
+  private async catalogSourceDocuments(dueDiligencePath: string): Promise<SourceDocument[]> {
+    console.log(`📋 Cataloging source documents from: ${dueDiligencePath}`);
+    
+    const sourceDocuments: SourceDocument[] = [];
+    
+    try {
+      // Check if directory exists
+      try {
+        const pathStats = await stat(dueDiligencePath);
+        if (!pathStats.isDirectory()) {
+          console.log(`⚠️ Input path is not a directory: ${dueDiligencePath}`);
+          return sourceDocuments;
+        }
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          console.log(`⚠️ Directory not found: ${dueDiligencePath}`);
+          return sourceDocuments;
+        }
+        throw error;
+      }
+      
+      // Try to read directory recursively, fall back to non-recursive if not supported
+      let files = [];
+      try {
+        files = await readdir(dueDiligencePath, { recursive: true });
+      } catch (error) {
+        console.log(`⚠️ Recursive directory reading not supported: ${error.message}`);
+        console.log(`📂 Falling back to non-recursive directory scan`);
+        files = await readdir(dueDiligencePath);
+      }
+      
+      // Process each file
+      for (const file of files) {
+        const filePath = typeof file === 'string' ? join(dueDiligencePath, file) : join(dueDiligencePath, file.toString());
+        
+        try {
+          const stats = await stat(filePath);
+          
+          if (stats.isFile()) {
+            // Determine category based on path and filename
+            let category = 'Other';
+            const pathStr = filePath.toString().toLowerCase();
+            
+            if (pathStr.includes('financials') || pathStr.includes('income') || pathStr.includes('t12')) {
+              category = 'Financial';
+            } else if (pathStr.includes('rent') || pathStr.includes('tenant')) {
+              category = 'Rent Roll';
+            } else if (pathStr.includes('legal') || pathStr.includes('lease')) {
+              category = 'Legal';
+            } else if (pathStr.includes('property') || pathStr.includes('physical')) {
+              category = 'Property';
+            } else if (pathStr.endsWith('.json')) {
+              category = 'Structured Data';
+            } else if (pathStr.endsWith('.md')) {
+              category = 'Documentation';
+            }
+            
+            sourceDocuments.push({
+              fileName: basename(filePath),
+              category: category,
+              path: filePath,
+              size: stats.size,
+              lastModified: stats.mtime.toISOString()
+            });
+          }
+        } catch (error) {
+          console.warn(`⚠️ Could not process file ${filePath}: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.warn(`⚠️ Could not read directory ${dueDiligencePath}: ${error.message}`);
+    }
+    
+    console.log(`📋 Cataloged ${sourceDocuments.length} source documents`);
+    return sourceDocuments;
+  }

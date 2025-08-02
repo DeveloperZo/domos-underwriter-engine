@@ -8,7 +8,7 @@ Let's test the basic functionality:
 # List available MCP tools
 npm run mcp-tools
 
-# Process a deal from due diligence
+# Process a deal from DueDiligence
 npm run mcp-process sample-deals/Due\ Diligence
 
 # Analyze a stage (after processing)
@@ -17,7 +17,7 @@ npm run mcp-analyze processed-deals/deal-folder A-initial-intake
 
 ## Test Workflow
 
-1. **Process Deal**: `processDeal("sample-deals/Due Diligence")`
+1. **Process Deal**: `processDeal("sample-deals/DueDiligence")`
 2. **Analyze Stage**: `analyzeStage(dealPath, "A-initial-intake")`  
 3. **Update Journey**: `updateAnalysisJourney(dealPath, analysis)`
 4. **Move Deal**: `moveDeal(dealPath, "A-initial-intake", "B-preliminary-analysis", "ADVANCE")`

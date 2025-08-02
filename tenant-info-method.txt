@@ -1,0 +1,105 @@
+  /**
+   * Extract tenant information from rent rolls
+   */
+  private async extractTenantInfo(dueDiligencePath: string): Promise<Tenant[]> {
+    console.log(`👥 Extracting tenant information from rent roll...`);
+    
+    const tenants: Tenant[] = [];
+    
+    try {
+      // First try standard path
+      let rentRollPath = join(dueDiligencePath, 'Historic Financials', 'Rent Roll.xlsx');
+      let fileExists = false;
+      
+      try {
+        const fileStats = await stat(rentRollPath);
+        fileExists = fileStats.isFile();
+      } catch (error) {
+        // File not found, try alternative locations
+        console.log(`⚠️ Standard rent roll not found, checking alternatives...`);
+        
+        const possiblePaths = [
+          join(dueDiligencePath, 'Rent Roll.xlsx'),
+          join(dueDiligencePath, 'rent_roll.xlsx'),
+          join(dueDiligencePath, 'tenants.xlsx'),
+          join(dueDiligencePath, 'Financials', 'Rent Roll.xlsx')
+        ];
+        
+        for (const path of possiblePaths) {
+          try {
+            const stats = await stat(path);
+            if (stats.isFile()) {
+              rentRollPath = path;
+              fileExists = true;
+              console.log(`📂 Found rent roll at: ${path}`);
+              break;
+            }
+          } catch (err) {
+            // Continue to next path
+          }
+        }
+      }
+      
+      if (fileExists) {
+        console.log(`📊 Found rent roll: ${basename(rentRollPath)}`);
+        console.log(`📄 MVP: Stubbing detailed parsing - Coming Soon`);
+        
+        // MVP: Create placeholder based on file existence
+        for (let i = 1; i <= 45; i++) {
+          tenants.push({
+            unitNumber: `${i}`,
+            leaseStart: "TBD",
+            leaseEnd: "TBD",
+            monthlyRent: 0, // Extract from Excel
+            securityDeposit: 0,
+            tenantName: "TBD - Extract from rent roll",
+            occupancyStatus: 'occupied', // Default assumption
+            unitType: "TBD",
+            sqft: 0,
+            lihtcQualified: false, // Will determine
+            amiLevel: undefined
+          });
+        }
+        console.log(`📊 Created ${tenants.length} placeholder tenant records`);
+      } else {
+        console.log(`⚠️ No rent roll found - Creating minimal structure`);
+        // Just create a few placeholders to show structure
+        for (let i = 1; i <= 5; i++) {
+          tenants.push({
+            unitNumber: `${i}`,
+            leaseStart: "TBD",
+            leaseEnd: "TBD", 
+            monthlyRent: 0,
+            securityDeposit: 0,
+            tenantName: "TBD",
+            occupancyStatus: 'occupied',
+            unitType: "TBD",
+            sqft: 0,
+            lihtcQualified: false,
+            amiLevel: undefined
+          });
+        }
+      }
+    } catch (error) {
+      console.log(`⚠️ Error processing rent roll: ${error.message}`);
+      // Create fallback placeholders
+      for (let i = 1; i <= 5; i++) {
+        tenants.push({
+          unitNumber: `${i}`,
+          leaseStart: "TBD",
+          leaseEnd: "TBD", 
+          monthlyRent: 0,
+          securityDeposit: 0,
+          tenantName: "TBD",
+          occupancyStatus: 'occupied',
+          unitType: "TBD",
+          sqft: 0,
+          lihtcQualified: false,
+          amiLevel: undefined
+        });
+      }
+    }
+    
+    console.log(`👥 Generated ${tenants.length} tenant records`);
+    return tenants;
+  }

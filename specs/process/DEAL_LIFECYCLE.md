@@ -8,7 +8,7 @@ The underwriting process consists of 9 distinct stages:
 
 1. **Strategic Qualification** - Initial deal screening and strategic fit assessment
 2. **Market Intelligence** - Market analysis and competitive positioning
-3. **Due Diligence** - Comprehensive property and financial review
+3. **DueDiligence** - Comprehensive property and financial review
 4. **Financial Underwriting** - Detailed financial modeling and analysis
 5. **Legal Compliance** - Legal review and compliance verification
 6. **Operational Feasibility** - Operations and management assessment

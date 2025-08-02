@@ -7,10 +7,10 @@ This system provides **4 simple MCP tools** that enable a clean human-in-the-loo
 ## 🔧 The 4 MCP Tools
 
 ### 1. `processDeal(dueDiligencePath)`
-- **Purpose**: Creates structured files from due diligence documents
+- **Purpose**: Creates structured files from DueDiligence documents
 - **Input**: Path to folder containing deal documents  
 - **Output**: Structured deal.json, tenants.json, financialSummary.json, AnalysisJourney.md
-- **Example**: `processDeal("sample-deals/Due Diligence")`
+- **Example**: `processDeal("sample-deals/DueDiligence")`
 
 ### 2. `analyzeStage(dealPath, stage)`  
 - **Purpose**: Loads deal data + stage specification for human analysis
@@ -33,7 +33,7 @@ This system provides **4 simple MCP tools** that enable a clean human-in-the-loo
 ## 🔄 Clean Workflow
 
 ```
-1. You: Call processDeal("sample-deals/Due Diligence")
+1. You: Call processDeal("sample-deals/DueDiligence")
 2. Tool: Creates structured files in processed-deals/
 
 3. You: Call analyzeStage(dealPath, "A-initial-intake") 
@@ -58,7 +58,7 @@ npm run demo-mcp
 
 # Or use individual commands:
 npm run mcp-tools                                    # List available tools
-npm run mcp-process "sample-deals/Due Diligence"     # Process a deal
+npm run mcp-process "sample-deals/DueDiligence"     # Process a deal
 npm run mcp-analyze processed-deals/deal-folder A-initial-intake  # Analyze stage
 ```
 
@@ -72,7 +72,7 @@ domos-underwriter-engine/
 │   ├── demo-mcp.ts          # 🧪 End-to-end demo script
 │   └── ...
 ├── sample-deals/
-│   └── Due Diligence/       # 📄 Sample deal documents
+│   └── DueDiligence/       # 📄 Sample deal documents
 ├── processed-deals/         # 📁 Output folder for structured deals
 ├── pipeline/                # 🏗️ Pipeline stage folders (auto-created)
 │   ├── A-initial-intake/
@@ -104,7 +104,7 @@ When you run `npm run demo-mcp`:
 🚀 Starting Domos MCP Server Demo
 
 📋 Available MCP Tools:
-  • processDeal: Process a deal from due diligence folder
+  • processDeal: Process a deal from DueDiligence folder
   • analyzeStage: Load deal data and stage specification for human analysis  
   • updateAnalysisJourney: Append human analysis to AnalysisJourney.md
   • moveDeal: Move deal through pipeline folders based on decision
@@ -136,7 +136,7 @@ Next Step: Call analyzeStage() to continue analysis
 ```bash
 npm run mcp-tools           # List all available MCP tools
 npm run demo-mcp           # Run full end-to-end demo
-npm run mcp-process        # Process deal from due diligence  
+npm run mcp-process        # Process deal from DueDiligence  
 npm run mcp-analyze        # Analyze specific stage
 npm run build              # Compile TypeScript
 npm run help               # Show all available commands

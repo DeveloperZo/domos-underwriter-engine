@@ -33,7 +33,7 @@ The Domos LIHTC Underwriter Engine project contains significant structural dupli
 
 - **`financial-analysis.md` vs `gate-C-full-underwriting.md`**
   - gate-C builds on concepts in financial-analysis.md
-  - More comprehensive due diligence requirements in gate-C
+  - More comprehensive DueDiligence requirements in gate-C
   - Similar financial modeling frameworks but different depth
 
 #### Low Overlap (20-50% similarity):

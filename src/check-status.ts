@@ -201,7 +201,7 @@ function getStageName(stage: number): string {
   const names: Record<number, string> = {
     1: 'Strategic Qualification',
     2: 'Market Intelligence', 
-    3: 'Due Diligence',
+    3: 'DueDiligence',
     4: 'Financial Underwriting',
     5: 'IC Review',
     6: 'Final Approval'

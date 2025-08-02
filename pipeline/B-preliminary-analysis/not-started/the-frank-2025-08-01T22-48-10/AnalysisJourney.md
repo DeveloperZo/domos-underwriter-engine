@@ -29,7 +29,7 @@
 
 ### Initial Assessment
 ✅ **Deal Parsed Successfully**
-- Structured data extracted from due diligence documents
+- Structured data extracted from DueDiligence documents
 - Financial statements processed
 - Tenant information compiled
 - Ready for pipeline analysis

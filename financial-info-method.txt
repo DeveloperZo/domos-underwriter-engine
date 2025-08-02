@@ -1,0 +1,99 @@
+  /**
+   * Extract financial information from financial statements
+   */
+  private async extractFinancialInfo(dueDiligencePath: string): Promise<FinancialSummary> {
+    console.log(`💰 Extracting financial information...`);
+    
+    try {
+      // Try multiple possible financial directories
+      const possibleDirs = [
+        join(dueDiligencePath, 'Historic Financials'),
+        join(dueDiligencePath, 'Financials'),
+        join(dueDiligencePath, 'Financial')
+      ];
+      
+      let financialsPath = '';
+      let files = [];
+      
+      // Find first existing directory with files
+      for (const dir of possibleDirs) {
+        try {
+          const dirStats = await stat(dir);
+          if (dirStats.isDirectory()) {
+            const dirFiles = await readdir(dir);
+            if (dirFiles.length > 0) {
+              financialsPath = dir;
+              files = dirFiles;
+              console.log(`📂 Found financials directory: ${dir}`);
+              break;
+            }
+          }
+        } catch (error) {
+          // Continue to next directory
+        }
+      }
+      
+      // If no standard directory found, check root
+      if (!financialsPath) {
+        try {
+          files = await readdir(dueDiligencePath);
+          financialsPath = dueDiligencePath;
+          console.log(`📂 Using root directory for financials`);
+        } catch (error) {
+          console.log(`⚠️ Could not find financial documents: ${error.message}`);
+        }
+      }
+      
+      // Find the T12 income statement or other financial document
+      const t12File = files.find(f => {
+        const fLower = f.toLowerCase();
+        return (
+          (fLower.includes('income') && fLower.includes('.xlsx')) || 
+          (fLower.includes('t12') && fLower.includes('.xlsx')) ||
+          (fLower.includes('financial') && fLower.includes('.xlsx')) ||
+          (fLower.includes('operating') && fLower.includes('.xlsx'))
+        );
+      });
+      
+      if (t12File) {
+        console.log(`📊 Found financial document: ${t12File}`);
+        console.log(`📄 MVP: Stubbing financial parsing - Coming Soon`);
+        console.log(`📄 Files available: ${files.join(', ')}`);
+      }
+    } catch (error) {
+      console.log(`⚠️ Error finding financials: ${error.message}`);
+    }
+    
+    // Create structure with placeholders
+    const financialSummary: FinancialSummary = {
+      periodStart: "TBD - Extract from T12",
+      periodEnd: "TBD - Extract from T12", 
+      totalRevenue: 0, // Extract from T12
+      rentalIncome: 0, // Extract from T12
+      commercialIncome: 0, // Extract from commercial leases
+      otherIncome: 0,
+      totalExpenses: 0, // Extract from T12
+      operatingExpenses: {
+        management: 0,
+        maintenance: 0,
+        utilities: 0,
+        insurance: 0,
+        taxes: 0,
+        marketing: 0,
+        administrative: 0,
+        other: 0
+      },
+      netOperatingIncome: 0, // Calculate from T12
+      debtService: 0, // TBD - Need loan docs
+      cashFlow: 0,
+      occupancyMetrics: {
+        totalUnits: 45, // Estimated from unit count
+        occupiedUnits: 0, // Extract from rent roll
+        occupancyRate: 0,
+        avgRentPerUnit: 0
+      }
+    };
+    
+    console.log(`💰 Created financial structure (data extraction pending)`);
+    return financialSummary;
+  }

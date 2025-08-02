@@ -392,7 +392,7 @@ Test impact of:
 - Pay attention to market timing and cycle position
 - Consider competitive landscape when evaluating price
 - Document all data sources and assumptions clearly
-- Highlight any areas requiring additional due diligence
+- Highlight any areas requiring additional DueDiligence
 - Always err on the conservative side for projections
 - Flag any unusual or optimistic assumptions
 - Consider local market conditions and trends

@@ -161,8 +161,8 @@ export class StageProcessor {
       },
       3: {
         stageNumber: 3,
-        stageName: 'Due Diligence',
-        description: 'Comprehensive property and legal due diligence',
+        stageName: 'DueDiligence',
+        description: 'Comprehensive property and legal DueDiligence',
         objectives: [
           'Validate property condition',
           'Review legal compliance',
@@ -336,7 +336,7 @@ export class StageProcessor {
         recommendations.push('Conduct detailed property inspection');
         break;
         
-      case 3: // Due Diligence
+      case 3: // DueDiligence
         findings.push('Property condition assessment');
         findings.push('LIHTC compliance review');
         
@@ -438,7 +438,7 @@ export class StageProcessor {
         if (marketRentCoverage >= 80) {
           recommendation = 'ADVANCE';
           reasoning = 'Market conditions support investment thesis';
-          nextAction = 'Proceed to Due Diligence stage';
+          nextAction = 'Proceed to DueDiligence stage';
         } else if (marketRentCoverage >= 60) {
           recommendation = 'HOLD';
           reasoning = 'Market conditions require additional analysis';
@@ -450,9 +450,9 @@ export class StageProcessor {
         }
         break;
         
-      case 3: // Due Diligence
+      case 3: // DueDiligence
         recommendation = 'ADVANCE';
-        reasoning = 'Due diligence completed satisfactorily';
+        reasoning = 'DueDiligence completed satisfactorily';
         nextAction = 'Proceed to Financial Underwriting stage';
         break;
         

@@ -19,13 +19,13 @@ npm run process-deal /path/to/my-deal   # Custom path
 **Usage**:
 ```bash
 npm run process-to-stage sample-deals 1    # Strategic Qualification only
-npm run process-to-stage sample-deals 3    # Through Due Diligence  
+npm run process-to-stage sample-deals 3    # Through DueDiligence  
 npm run process-to-stage sample-deals 6    # Through Final Approval
 ```
 **Stages**:
 - `1` - Strategic Qualification
 - `2` - Market Intelligence  
-- `3` - Due Diligence
+- `3` - DueDiligence
 - `4` - Financial Underwriting
 - `5` - IC Review
 - `6` - Final Approval
@@ -55,7 +55,7 @@ npm run demo-stages sample-deals  # Full pipeline demo
 ==================================
 
 📁 Deal Path: sample-deals
-🎯 Target Stage: 3 (Due Diligence)
+🎯 Target Stage: 3 (DueDiligence)
 
 📋 Step 1: Ensuring deal structure is processed...
 ✅ Deal structure ready: The Frank
@@ -67,16 +67,16 @@ Current Status: ACTIVE
 🔄 Step 3: Processing stages 1 through 3...
 Starting from stage 3
 
-🔄 Processing Stage 3: Due Diligence
+🔄 Processing Stage 3: DueDiligence
   ✅ Stage 3: ADVANCE
-     Due diligence completed satisfactorily
+     DueDiligence completed satisfactorily
 
 📊 Step 4: Final Status
 =======================
-Current Stage: 3 (Due Diligence)
+Current Stage: 3 (DueDiligence)
 Status: ACTIVE
 Last Decision: ADVANCE
-Reasoning: Due diligence completed satisfactorily
+Reasoning: DueDiligence completed satisfactorily
 
 📂 Step 5: Generated Files
 ==========================
@@ -103,9 +103,9 @@ To process all remaining: npm run demo-stages sample-deals
 🏢 Property: The Frank
 
 📊 Current Status: ACTIVE
-🎯 Current Stage: 3 (Due Diligence)
+🎯 Current Stage: 3 (DueDiligence)
 ✅ Last Decision: ADVANCE
-💭 Reasoning: Due diligence completed satisfactorily
+💭 Reasoning: DueDiligence completed satisfactorily
 
 📋 Processing History:
 ======================
@@ -119,9 +119,9 @@ To process all remaining: npm run demo-stages sample-deals
    Reasoning: Market conditions support investment thesis
    Key Findings: Market analysis based on property location and type...
    │
-✅ Stage 3: Due Diligence
+✅ Stage 3: DueDiligence
    Decision: ADVANCE (12/1/2024 2:30:21 PM)
-   Reasoning: Due diligence completed satisfactorily
+   Reasoning: DueDiligence completed satisfactorily
    Key Findings: Property condition assessment, LIHTC compliance review
 
 🔮 Next Steps:
@@ -239,9 +239,9 @@ npm run demo-stages /path/to/my-deal    # Custom path
   Stage 2: ADVANCE - Market conditions support investment thesis
 
 🔄 Processing Stage 3...
-📋 Analyzing: Due Diligence
+📋 Analyzing: DueDiligence
 ✅ Stage 3 completed: ADVANCE
-  Stage 3: ADVANCE - Due diligence completed satisfactorily
+  Stage 3: ADVANCE - DueDiligence completed satisfactorily
 
 🔄 Processing Stage 4...
 📋 Analyzing: Financial Underwriting
@@ -357,7 +357,7 @@ npm run process-to-stage sample-deals 1
 # Check progress
 npm run status sample-deals
 
-# Continue to Due Diligence
+# Continue to DueDiligence
 npm run process-to-stage sample-deals 3
 
 # Process remaining stages
@@ -381,7 +381,7 @@ After running both commands:
 
 ```
 sample-deals/
-├── Due Diligence/           # Original source documents
+├── DueDiligence/           # Original source documents
 │   ├── Historic Financials/
 │   │   ├── Rent Roll.xlsx
 │   │   └── The Frank Consolidated Income Statement.xlsx

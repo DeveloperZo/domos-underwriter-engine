@@ -154,7 +154,7 @@ function getStageName(stage: number): string {
   const names: { [key: string]: string } = {
     '1': 'Strategic Qualification',
     '2': 'Market Intelligence', 
-    '3': 'Due Diligence',
+    '3': 'DueDiligence',
     '4': 'Financial Underwriting',
     '5': 'IC Review',
     '6': 'Final Approval'
@@ -187,12 +187,12 @@ function showUsage() {
   console.log('\n💡 Usage: npm run process-to-stage <deal-path> <stage-number>');
   console.log('\nExamples:');
   console.log('  npm run process-to-stage sample-deals 1    # Process to Strategic Qualification');
-  console.log('  npm run process-to-stage sample-deals 3    # Process through Due Diligence');
+  console.log('  npm run process-to-stage sample-deals 3    # Process through DueDiligence');
   console.log('  npm run process-to-stage sample-deals 6    # Process to Final Approval');
   console.log('\nStages:');
   console.log('  1 - Strategic Qualification');
   console.log('  2 - Market Intelligence');
-  console.log('  3 - Due Diligence');
+  console.log('  3 - DueDiligence');
   console.log('  4 - Financial Underwriting');
   console.log('  5 - IC Review');
   console.log('  6 - Final Approval');

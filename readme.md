@@ -36,7 +36,7 @@ npm install
 npm run process-deal sample-deals
 
 # Option 1: Process to specific stage
-npm run process-to-stage sample-deals 3  # Through Due Diligence
+npm run process-to-stage sample-deals 3  # Through DueDiligence
 npm run status sample-deals              # Check progress
 
 # Option 2: Process all stages at once
@@ -55,7 +55,7 @@ npm run demo-stages sample-deals         # Full pipeline
 ### 📊 What Gets Parsed
 
 - **Excel Files**: Rent rolls, financial statements (T12)
-- **PDF Files**: Due diligence documents (categorized)
+- **PDF Files**: DueDiligence documents (categorized)
 - **Deal Object**: Property details, LIHTC info, financial metrics
 - **Tenant Data**: Unit details, occupancy, rent information
 - **Financial Summary**: Income, expenses, NOI, key ratios

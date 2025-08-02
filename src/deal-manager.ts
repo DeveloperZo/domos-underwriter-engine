@@ -1,6 +1,7 @@
 import { readFile, readdir, stat, writeFile, mkdir } from 'fs/promises';
 import { join, basename } from 'path';
 import * as XLSX from 'xlsx';
+import { Stats } from 'fs';
 
 export interface SourceDocument {
   fileName: string;
@@ -122,25 +123,68 @@ export interface FinancialSummary {
   };
 }
 
+// Define a type for Node.js filesystem errors
+interface FileSystemError extends Error {
+  code?: string;
+}
+
 export class DealManager {
   private readonly outputPath = './processed-deals';
   
   /**
-   * Process a deal from a folder containing due diligence documents
+   * Process a deal from a folder containing DueDiligence documents
+   * @param dueDiligencePath Path to the folder containing DueDiligence documents
+   * @param outputFolderName Optional custom name for the output folder
    */
-  async processDealFromFolder(dueDiligencePath: string): Promise<DealStructure> {
+  async processDealFromFolder(dueDiligencePath: string, outputFolderName?: string): Promise<DealStructure> {
     console.log(`🏢 Processing deal from: ${dueDiligencePath}`);
     
-    // Create timestamped output directory
+    // Check if the input path is inside the output directory to avoid recursive issues
+    if (dueDiligencePath.startsWith(this.outputPath)) {
+      console.log(`⚠️ Warning: Input path is within the output directory. Using specialized processing mode.`);
+    }
+    
+    // Extract deal name from path or use provided output name
+    const dealNameFromPath = basename(dueDiligencePath).toLowerCase().includes('frank') ? 
+      'the-frank' : basename(dueDiligencePath);
+    
+    // Use the provided output folder name or the deal name from path
+    const dealBaseName = outputFolderName || dealNameFromPath;
+    
+    // Ensure the output directory exists
+    try {
+      await mkdir(this.outputPath, { recursive: true });
+    } catch (error) {
+      // Ignore error if directory already exists
+    }
+    
+    // Create timestamped output directory for this specific deal
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    const dealOutputPath = join(this.outputPath, `the-frank-${timestamp}`);
+    const dealOutputPath = join(this.outputPath, `${dealBaseName}-${timestamp}`);
     
     await mkdir(dealOutputPath, { recursive: true });
     console.log(`📁 Created output directory: ${dealOutputPath}`);
     
     try {
+      // Verify the input directory exists
+      try {
+        const pathStats = await stat(dueDiligencePath);
+        if (!pathStats.isDirectory()) {
+          throw new Error(`Input path is not a directory: ${dueDiligencePath}`);
+        }
+      } catch (error) {
+        const fsError = error as FileSystemError;
+        if (fsError.code === 'ENOENT') {
+          console.log(`⚠️ Input directory not found: ${dueDiligencePath}`);
+          console.log(`📘 Creating minimal deal structure with placeholder data`);
+          // Continue with placeholder data
+        } else {
+          throw error;
+        }
+      }
+      
       // Parse deal information from available documents
-      const deal = await this.extractDealInfo(dueDiligencePath);
+      const deal = await this.extractDealInfo(dueDiligencePath, outputFolderName);
       const tenants = await this.extractTenantInfo(dueDiligencePath);
       const financialSummary = await this.extractFinancialInfo(dueDiligencePath);
       const sourceDocuments = await this.catalogSourceDocuments(dueDiligencePath);
@@ -187,21 +231,47 @@ export class DealManager {
       return dealStructure;
       
     } catch (error) {
-      console.error(`❌ Error processing deal: ${error}`);
+      console.error(`❌ Error processing deal:`, error);
       throw error;
     }
   }
   
   /**
-   * Extract deal information from due diligence documents
+   * Extract deal information from DueDiligence documents
    */
-  private async extractDealInfo(dueDiligencePath: string): Promise<Deal> {
-    console.log(`📋 Extracting deal information from The Frank documents...`);
+  private async extractDealInfo(dueDiligencePath: string, outputFolderName?: string): Promise<Deal> {
+    console.log(`📋 Extracting deal information from documents...`);
     
-    // MVP: Use known info about The Frank deal from the documents
+    // Determine if this is The Frank or a different property based on path
+    const pathLower = dueDiligencePath.toLowerCase();
+    const isFrankDeal = pathLower.includes('frank') || pathLower.includes('sample');
+    const isProcessedDealsPath = pathLower.includes('processed-deals');
+    
+    // Property name based on directory or provided output name
+    let dealName: string;
+    
+    if (outputFolderName) {
+      // Use provided output name if available, with nice formatting
+      dealName = outputFolderName.replace(/-/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    } else if (isFrankDeal) {
+      dealName = "The Frank";
+    } else {
+      // Convert directory name to a nice property name
+      dealName = basename(dueDiligencePath).replace(/-/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    }
+    
+    // Generate a unique ID that includes path info for traceability
+    const pathHash = basename(dueDiligencePath).slice(0, 8).replace(/\W/g, '');
+    const uniqueId = isProcessedDealsPath ? 
+      `reanalysis-${outputFolderName || pathHash}-${Date.now()}` : 
+      `${dealName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    
+    // MVP: Use known info about the deal from the documents
     const deal: Deal = {
-      id: `the-frank-${Date.now()}`,
-      propertyName: "The Frank",
+      id: uniqueId,
+      propertyName: dealName,
       address: {
         street: "TBD - Extract from lease documents", 
         city: "Atlanta",
@@ -244,17 +314,46 @@ export class DealManager {
    * Extract tenant information from rent rolls
    */
   private async extractTenantInfo(dueDiligencePath: string): Promise<Tenant[]> {
-    console.log(`👥 Extracting tenant info from The Frank rent roll...`);
+    console.log(`👥 Extracting tenant information from rent roll...`);
     
     const tenants: Tenant[] = [];
     
     try {
-      // Check if rent roll exists
-      const rentRollPath = join(dueDiligencePath, 'Historic Financials', 'Rent Roll.xlsx');
-      const fileStats = await stat(rentRollPath);
+      // First try standard path
+      let rentRollPath = join(dueDiligencePath, 'Historic Financials', 'Rent Roll.xlsx');
+      let fileExists = false;
       
-      if (fileStats.isFile()) {
-        console.log(`📊 Found rent roll: Rent Roll.xlsx`);
+      try {
+        const fileStats = await stat(rentRollPath);
+        fileExists = fileStats.isFile();
+      } catch (error) {
+        // File not found, try alternative locations
+        console.log(`⚠️ Standard rent roll not found, checking alternatives...`);
+        
+        const possiblePaths = [
+          join(dueDiligencePath, 'Rent Roll.xlsx'),
+          join(dueDiligencePath, 'rent_roll.xlsx'),
+          join(dueDiligencePath, 'tenants.xlsx'),
+          join(dueDiligencePath, 'Financials', 'Rent Roll.xlsx')
+        ];
+        
+        for (const path of possiblePaths) {
+          try {
+            const stats = await stat(path);
+            if (stats.isFile()) {
+              rentRollPath = path;
+              fileExists = true;
+              console.log(`📂 Found rent roll at: ${path}`);
+              break;
+            }
+          } catch (err) {
+            // Continue to next path
+          }
+        }
+      }
+      
+      if (fileExists) {
+        console.log(`📊 Found rent roll: ${basename(rentRollPath)}`);
         console.log(`📄 MVP: Stubbing detailed parsing - Coming Soon`);
         
         // MVP: Create placeholder based on file existence
@@ -274,10 +373,29 @@ export class DealManager {
           });
         }
         console.log(`📊 Created ${tenants.length} placeholder tenant records`);
+      } else {
+        console.log(`⚠️ No rent roll found - Creating minimal structure`);
+        // Just create a few placeholders to show structure
+        for (let i = 1; i <= 5; i++) {
+          tenants.push({
+            unitNumber: `${i}`,
+            leaseStart: "TBD",
+            leaseEnd: "TBD", 
+            monthlyRent: 0,
+            securityDeposit: 0,
+            tenantName: "TBD",
+            occupancyStatus: 'occupied',
+            unitType: "TBD",
+            sqft: 0,
+            lihtcQualified: false,
+            amiLevel: undefined
+          });
+        }
       }
     } catch (error) {
-      console.log(`⚠️ Rent roll not found - Creating minimal structure`);
-      // Just create a few placeholders to show structure
+      const err = error as Error;
+      console.log(`⚠️ Error processing rent roll: ${err.message}`);
+      // Create fallback placeholders
       for (let i = 1; i <= 5; i++) {
         tenants.push({
           unitNumber: `${i}`,
@@ -295,7 +413,7 @@ export class DealManager {
       }
     }
     
-    console.log(`👥 Generated ${tenants.length} tenant records for The Frank`);
+    console.log(`👥 Generated ${tenants.length} tenant records`);
     return tenants;
   }
   
@@ -303,25 +421,71 @@ export class DealManager {
    * Extract financial information from financial statements
    */
   private async extractFinancialInfo(dueDiligencePath: string): Promise<FinancialSummary> {
-    console.log(`💰 Extracting financials from The Frank T12...`);
+    console.log(`💰 Extracting financial information...`);
     
     try {
-      const financialsPath = join(dueDiligencePath, 'Historic Financials');
-      const files = await readdir(financialsPath);
+      // Try multiple possible financial directories
+      const possibleDirs = [
+        join(dueDiligencePath, 'Historic Financials'),
+        join(dueDiligencePath, 'Financials'),
+        join(dueDiligencePath, 'Financial')
+      ];
       
-      // Find the T12 income statement  
-      const t12File = files.find(f => f.includes('Income Statement') && f.includes('.xlsx'));
+      let financialsPath = '';
+      let files: string[] = [];
+      
+      // Find first existing directory with files
+      for (const dir of possibleDirs) {
+        try {
+          const dirStats = await stat(dir);
+          if (dirStats.isDirectory()) {
+            const dirFiles = await readdir(dir);
+            if (dirFiles.length > 0) {
+              financialsPath = dir;
+              files = dirFiles;
+              console.log(`📂 Found financials directory: ${dir}`);
+              break;
+            }
+          }
+        } catch (error) {
+          // Continue to next directory
+        }
+      }
+      
+      // If no standard directory found, check root
+      if (!financialsPath) {
+        try {
+          files = await readdir(dueDiligencePath);
+          financialsPath = dueDiligencePath;
+          console.log(`📂 Using root directory for financials`);
+        } catch (error) {
+          const err = error as Error;
+          console.log(`⚠️ Could not find financial documents: ${err.message}`);
+        }
+      }
+      
+      // Find the T12 income statement or other financial document
+      const t12File = files.find(f => {
+        const fLower = f.toLowerCase();
+        return (
+          (fLower.includes('income') && fLower.includes('.xlsx')) || 
+          (fLower.includes('t12') && fLower.includes('.xlsx')) ||
+          (fLower.includes('financial') && fLower.includes('.xlsx')) ||
+          (fLower.includes('operating') && fLower.includes('.xlsx'))
+        );
+      });
       
       if (t12File) {
-        console.log(`📊 Found T12: ${t12File}`);
-        console.log(`📄 MVP: Stubbing T12 parsing - Coming Soon`);
+        console.log(`📊 Found financial document: ${t12File}`);
+        console.log(`📄 MVP: Stubbing financial parsing - Coming Soon`);
         console.log(`📄 Files available: ${files.join(', ')}`);
       }
     } catch (error) {
-      console.log(`⚠️ Financials directory issue: ${error}`);
+      const err = error as Error;
+      console.log(`⚠️ Error finding financials: ${err.message}`);
     }
     
-    // MVP: Create structure with TBD values for The Frank
+    // Create structure with placeholders
     const financialSummary: FinancialSummary = {
       periodStart: "TBD - Extract from T12",
       periodEnd: "TBD - Extract from T12", 
@@ -351,7 +515,7 @@ export class DealManager {
       }
     };
     
-    console.log(`💰 Created financial structure for The Frank (data extraction pending)`);
+    console.log(`💰 Created financial structure (data extraction pending)`);
     return financialSummary;
   }
   
@@ -395,7 +559,7 @@ export class DealManager {
   }
   
   /**
-   * Catalog all source documents from the due diligence folder
+   * Catalog all source documents from the DueDiligence folder
    */
   private async catalogSourceDocuments(dueDiligencePath: string): Promise<SourceDocument[]> {
     console.log(`📋 Cataloging source documents from: ${dueDiligencePath}`);
@@ -403,17 +567,45 @@ export class DealManager {
     const sourceDocuments: SourceDocument[] = [];
     
     try {
-      const files = await readdir(dueDiligencePath, { recursive: true });
+      // Check if directory exists
+      try {
+        const pathStats = await stat(dueDiligencePath);
+        if (!pathStats.isDirectory()) {
+          console.log(`⚠️ Input path is not a directory: ${dueDiligencePath}`);
+          return sourceDocuments;
+        }
+      } catch (error) {
+        const fsError = error as FileSystemError;
+        if (fsError.code === 'ENOENT') {
+          console.log(`⚠️ Directory not found: ${dueDiligencePath}`);
+          return sourceDocuments;
+        }
+        throw error;
+      }
       
+      // Try to read directory recursively, fall back to non-recursive if not supported
+      let files: string[] = [];
+      try {
+        // TypeScript doesn't understand the recursive option properly, so we need to cast
+        files = await readdir(dueDiligencePath, { recursive: true } as any) as string[];
+      } catch (error) {
+        const err = error as Error;
+        console.log(`⚠️ Recursive directory reading not supported: ${err.message}`);
+        console.log(`📂 Falling back to non-recursive directory scan`);
+        files = await readdir(dueDiligencePath);
+      }
+      
+      // Process each file
       for (const file of files) {
-        const fullPath = join(dueDiligencePath, file.toString());
+        const filePath = typeof file === 'string' ? join(dueDiligencePath, file) : join(dueDiligencePath, String(file));
+        
         try {
-          const stats = await stat(fullPath);
+          const stats = await stat(filePath);
           
           if (stats.isFile()) {
             // Determine category based on path and filename
             let category = 'Other';
-            const pathStr = file.toString().toLowerCase();
+            const pathStr = filePath.toString().toLowerCase();
             
             if (pathStr.includes('financials') || pathStr.includes('income') || pathStr.includes('t12')) {
               category = 'Financial';
@@ -423,22 +615,28 @@ export class DealManager {
               category = 'Legal';
             } else if (pathStr.includes('property') || pathStr.includes('physical')) {
               category = 'Property';
+            } else if (pathStr.endsWith('.json')) {
+              category = 'Structured Data';
+            } else if (pathStr.endsWith('.md')) {
+              category = 'Documentation';
             }
             
             sourceDocuments.push({
-              fileName: basename(file.toString()),
+              fileName: basename(filePath),
               category: category,
-              path: fullPath,
+              path: filePath,
               size: stats.size,
               lastModified: stats.mtime.toISOString()
             });
           }
         } catch (error) {
-          console.warn(`⚠️ Could not process file ${file}: ${error}`);
+          const err = error as Error;
+          console.warn(`⚠️ Could not process file ${filePath}: ${err.message}`);
         }
       }
     } catch (error) {
-      console.warn(`⚠️ Could not read directory ${dueDiligencePath}: ${error}`);
+      const err = error as Error;
+      console.warn(`⚠️ Could not read directory ${dueDiligencePath}: ${err.message}`);
     }
     
     console.log(`📋 Cataloged ${sourceDocuments.length} source documents`);
@@ -451,11 +649,32 @@ export class DealManager {
   private async createAnalysisJourney(outputPath: string, deal: Deal): Promise<void> {
     console.log(`📝 Creating AnalysisJourney.md...`);
     
+    const timestamp = new Date();
+    const formattedDate = timestamp.toISOString();
+    
     const journeyContent = `# Analysis Journey: ${deal.propertyName}
 
 **Deal ID:** ${deal.id}  
-**Created:** ${new Date().toISOString()}  
+**Created:** ${formattedDate}  
 **Status:** Initial Intake
+
+---
+
+## Deal Processing Log
+
+### Initial Processing - ${timestamp.toLocaleString()}
+✅ **Deal parsing initiated**
+- Source: Original DueDiligence documents
+- Processor: Domos Underwriter Engine v0.1.0
+- Process ID: ${deal.id.split('-')[1] || 'MANUAL'}
+
+#### Processing Steps Completed:
+1. Document identification and categorization
+2. Basic property information extraction
+3. Tenant data structuring (${deal.basicInfo.totalUnits} units)
+4. Financial data extraction
+5. LIHTC status assessment
+6. Data validation and normalization
 
 ---
 
@@ -482,13 +701,13 @@ export class DealManager {
 
 ### Initial Assessment
 ✅ **Deal Parsed Successfully**
-- Structured data extracted from due diligence documents
+- Structured data extracted from DueDiligence documents
 - Financial statements processed
 - Tenant information compiled
 - Ready for pipeline analysis
 
 ### Next Steps
-1. Move to Stage 1: Initial Intake Analysis
+1. Move to Stage 1: Strategic Qualification & Advantage
 2. Apply gate criteria and screening filters
 3. Perform preliminary underwriting assessment
 

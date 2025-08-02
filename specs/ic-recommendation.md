@@ -75,7 +75,7 @@ Evaluate strategic alignment:
 
 #### Transaction Timeline
 Create detailed execution plan:
-- Due diligence completion (30-45 days)
+- DueDiligence completion (30-45 days)
 - Financing applications and approvals (45-60 days)
 - Closing timeline (60-90 days total)
 - Post-closing integration (30 days)
@@ -112,7 +112,7 @@ Identify needs:
 
 **Conditions Might Include:**
 - Price reduction or improved terms
-- Enhanced due diligence in specific areas
+- Enhanced DueDiligence in specific areas
 - Modified capital improvement timeline
 - Additional financing contingencies
 - Specialized management or oversight requirements

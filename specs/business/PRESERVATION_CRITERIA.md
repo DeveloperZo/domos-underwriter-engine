@@ -68,7 +68,7 @@ Preservation involves acquiring and improving existing affordable housing proper
 - Community impact: Minimum 4.0/10.0
 - Financial viability: Minimum 4.0/10.0
 
-## Due Diligence Requirements
+## DueDiligence Requirements
 
 ### Affordability Analysis
 - Current restriction agreements review

@@ -31,7 +31,7 @@ Comprehensive financial and operational analysis to build a complete investment 
 - [ ] **Life Safety Systems**: Fire, security, elevator inspections
 - [ ] **Americans with Disabilities Act (ADA) Compliance**: Assessment and costs
 
-### Market and Legal Due Diligence
+### Market and Legal DueDiligence
 - [ ] **Title Commitment**: Preliminary title report
 - [ ] **Survey**: Current property survey
 - [ ] **Zoning Compliance**: Confirmation of current use conformity
@@ -280,7 +280,7 @@ Calculate for base, upside, and downside scenarios:
 ### Execution Risks
 - **Development Team**: Experience and capacity for deal size
 - **Financing Risk**: Ability to secure assumed financing terms
-- **Timeline Risk**: Market changes during extended due diligence
+- **Timeline Risk**: Market changes during extended DueDiligence
 - **Cost Overrun Risk**: Capital improvement cost escalation
 - **Compliance Risk**: LIHTC and regulatory compliance maintenance
 

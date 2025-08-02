@@ -25,7 +25,7 @@ export interface MCPResponse {
  * Simplified MCP Tools for Domos Underwriter Engine
  * 
  * This provides exactly 4 tools to enable a clean human-in-the-loop workflow:
- * 1. processDeal - Creates structured files from due diligence
+ * 1. processDeal - Creates structured files from DueDiligence
  * 2. analyzeStage - Loads deal + spec for human analysis
  * 3. updateAnalysisJourney - Appends analysis to journey
  * 4. moveDeal - Moves deal through pipeline stages
@@ -57,7 +57,7 @@ export class DomosMCPServer {
   };
 
   /**
-   * Tool 1: Process Deal - Creates structured files from due diligence folder
+   * Tool 1: Process Deal - Creates structured files from DueDiligence folder
    */
   async processDeal(dueDiligencePath: string): Promise<MCPResponse> {
     try {
@@ -106,7 +106,7 @@ export class DomosMCPServer {
 
 Error: ${error instanceof Error ? error.message : String(error)}
 
-Please check the due diligence path and try again.`
+Please check the DueDiligence path and try again.`
         }]
       };
     }
@@ -401,13 +401,13 @@ Check that the stage names are valid and the deal path exists.`
     return [
       {
         name: 'processDeal',
-        description: 'Process a deal from due diligence folder, creating structured files in processed-deals/',
+        description: 'Process a deal from DueDiligence folder, creating structured files in processed-deals/',
         inputSchema: {
           type: 'object',
           properties: {
             dueDiligencePath: {
               type: 'string',
-              description: 'Path to folder containing due diligence documents'
+              description: 'Path to folder containing DueDiligence documents'
             }
           },
           required: ['dueDiligencePath']
@@ -550,7 +550,7 @@ if (process.argv[2]) {
 
     default:
       console.log('Domos MCP Server Commands:');
-      console.log('  processDeal <path>     - Process deal from due diligence');
+      console.log('  processDeal <path>     - Process deal from DueDiligence');
       console.log('  analyzeStage <path> <stage> - Load deal and spec for analysis');
       console.log('  tools                  - List available MCP tools');
   }

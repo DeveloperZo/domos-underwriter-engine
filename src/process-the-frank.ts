@@ -8,8 +8,8 @@ async function processTheFrankDeal() {
   
   const dealManager = new DealManager();
   
-  // Path to The Frank due diligence documents
-  const dueDiligencePath = join(process.cwd(), 'sample-deals', 'Due Diligence');
+  // Path to The Frank DueDiligence documents
+  const dueDiligencePath = join(process.cwd(), 'sample-deals', 'DueDiligence');
   
   try {
     const outputPath = await dealManager.processDealFromFolder(dueDiligencePath);

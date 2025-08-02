@@ -3,7 +3,7 @@
 ## The Real 4 MCP Tools
 
 ### 1. `processDeal(dueDiligencePath)`
-- **Purpose**: Creates structured files from due diligence documents
+- **Purpose**: Creates structured files from DueDiligence documents
 - **Who calls**: Human
 - **Output**: Structured deal.json, tenants.json, financialSummary.json, AnalysisJourney.md
 
@@ -25,7 +25,7 @@
 ## Corrected Workflow
 
 ```
-1. Human: Call processDeal("sample-deals/Due Diligence")
+1. Human: Call processDeal("sample-deals/DueDiligence")
 2. Tool: Creates structured files in processed-deals/
 
 3. Human: Call analyzeStage(dealPath, "A-initial-intake")
