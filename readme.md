@@ -1,136 +1,83 @@
-# Domos LIHTC Preservation Underwriter Engine
+# Domos Underwriter Engine
 
-**Version**: 0.2.0  
-**Status**: Development 🚧
+## What Is This?
 
-## Overview
+A hybrid AI-powered system that helps Domos make fast, high-quality investment decisions for affordable housing preservation (LIHTC/NOAH properties).
 
-AI-powered underwriting system for LIHTC (Low-Income Housing Tax Credit) preservation investment analysis, providing full-spectrum underwriting, transparent decision-making, and edge-case adaptability. This system helps Domos bridge the gap between institutional-grade analysis and competitive acquisition timelines.
+## The Problem We're Solving
+
+Domos needs to move quickly in a competitive market while still performing thorough analysis on affordable housing investments. Traditional processes are too slow, but cutting corners risks bad investments.
+
+## How It Works
+
+The system:
+1. Automates the 9-stage investment analysis process
+2. Provides clear explanations for all decisions ("glass box" approach)
+3. Flags unusual cases for human review
+4. Generates ready-to-present investment committee materials
+
+## System Flow
+
+1. **Deal Ingestion**: Drop a new deal folder into the system
+   - Contains raw property documents (rent roll, T12, etc.)
+   - System assigns a unique deal ID
+
+2. **Data Structuring**: Agent runs command to process raw documents
+   - Extracts and normalizes key data points
+   - Creates structured data files in the deal folder
+   - Flags any missing or problematic information
+
+3. **Pipeline Entry**: Agent moves structured deal folder into active pipeline
+   - Deal status updated to "In Analysis"
+   - Analysis journey document initiated
+
+4. **Deal Processing**: Agent applies pipeline specs to the deal
+   - Each spec performs specific analysis (market, financial, regulatory, etc.)
+   - Results are stored in the deal object
+   - All actions and outcomes are logged to the analysis journey
+
+5. **Review & Decision**: System generates final recommendation and materials
+   - Investment committee deck and summary auto-generated
+   - Decision and rationale recorded in the analysis journey
+
+## Traceability & Audit
+
+Every action in the system is recorded in the analysis journey, providing:
+- Complete history of all processing steps
+- Record of which agent performed each action
+- Timestamps for all activities
+- Documentation of all decision inputs and outputs
+- Full audit trail for compliance and review
 
 ## Key Features
 
-- **Glass Box Underwriting**: All automated decisions include human-legible outputs
-- **Enhanced Metadata Tracking**: Comprehensive tracking of deal status and analysis history
-- **Nine-Stage Investment Framework**: Thorough analysis pipeline with progressive stages
-- **Edge Case Detection**: Automatic identification of deals requiring manual review
-- **LP-Facing Output Generation**: Automated production of presentation materials
+- **Fast Decision-Making**: Complete analysis in under 3 business days
+- **Transparent Logic**: All decisions include explanations and source data
+- **Edge Case Detection**: Automatically identifies unusual properties that need special attention
+- **Simulation Tools**: Analysts can test different scenarios and assumptions
+- **Ready-Made Outputs**: Automatically generates presentation decks and executive summaries
 
-## Setup & Installation
+## Success Metrics
 
-```bash
-# Clone repository
-git clone https://github.com/yourusername/domos-underwriter-engine.git
-cd domos-underwriter-engine
+- Thorough analysis (100% of traditional investment committee rigor)
+- Quick turnaround (< 3 days)
+- Fast presentation generation (< 1 hour)
+- All unusual cases properly flagged for human review
 
-# Install dependencies
-npm install
-
-# Build TypeScript files
-npm run build
-```
-
-## Quick Start
-
-Process a sample deal:
-
-```bash
-# Parse deal documents into structured data
-npm run process-deal sample-deals/the-frank
-
-# Analyze through all stages
-npm run analyze-to-stage sample-deals/the-frank 9
-```
-
-## Command Reference
-
-### Core Commands
-
-- `npm run process-deal <deal-path>` - Parse documents into structured JSON
-- `npm run analyze-to-stage <deal-path> <stage-number> [--force]` - Analyze deal through specified stage
-- `npm run status <deal-path>` - Check current deal status and progress
-- `npm run demo-stages <deal-path>` - Process through all stages (demonstration)
-
-See [COMMANDS.md](COMMANDS.md) for detailed usage examples.
-
-## Nine-Stage Investment Framework
-
-1. **Strategic Qualification & Advantage**
-   - Validates alignment with investment thesis
-   - Identifies competitive positioning
-
-2. **Market Intelligence & Timing**
-   - Analyzes market dynamics and timing
-   - Validates rent growth assumptions
-
-3. **Due Diligence & Bias Mitigation**
-   - Validates property condition and compliance
-   - Identifies bias in underwriting assumptions
-
-4. **Financial Underwriting**
-   - Builds pro forma financial models
-   - Tests sensitivity to various scenarios
-
-5. **Legal & Regulatory Compliance**
-   - Validates LIHTC compliance status
-   - Identifies regulatory risks
-
-6. **Operational Feasibility**
-   - Validates management plan
-   - Identifies operational improvement opportunities
-
-7. **Risk Mitigation Planning**
-   - Creates risk mitigation strategies
-   - Establishes contingency plans
-
-8. **Portfolio Integration**
-   - Analyzes fit within existing portfolio
-   - Identifies synergies and diversification benefits
-
-9. **Investment Committee Recommendation**
-   - Generates final go/no-go recommendation
-   - Produces board-ready presentation materials
-
-## System Directory Structure
+## Directory Structure
 
 ```
 /DomosDealEvaluation/
-├── /SystemCore/
-│   ├── /TransparencyLayer/
-│   │   ├── GlassBoxTemplates/
-│   │   ├── OverrideTriggers.md
-│   │   └── AnalystSimulationMode.md
-│   ├── /StageSpecifications/
-│   ├── /AnalyticalTemplates/
-│   └── /SystemPerformance/
-│       ├── ReviewAccuracyTracking/
-│       ├── AnalystFeedbackLogs/
-│       └── ModelDriftReports/
-├── /ActiveDeals/
+├── /SystemCore/ - Core system functionality
+├── /ActiveDeals/ - Current deals under evaluation
+│   ├── /Deal_ID_123/ - Example deal folder
+│   │   ├── raw/ - Original documents
+│   │   ├── structured/ - Processed data
+│   │   ├── DealObject.json - Current deal state
+│   │   ├── AnalysisJourney.md - Complete audit trail
+│   │   └── /Outputs/ - Generated materials
 ```
 
-## Glass Box Transparency
+## Purpose
 
-Each stage outputs:
-
-- **DecisionSummary.md**: Plain-language rationale
-- **InputTrace.md**: Source documents and variables used
-- **RedFlagsRaised.md**: Issues detected vs. expectations
-- **OverrideNotes.md**: (if triggered) Manual review notes
-
-## Deal Metadata Structure
-
-Enhanced deal tracking includes:
-
-- Current stage (1-9)
-- Status at each stage (pending, approved, rejected, needs-review)
-- Overall deal status (active, rejected, approved, on-hold)
-- Timestamp of last analysis
-- Complete analysis history
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
-
-## License
-
-MIT License - See LICENSE file for details.
+This system helps Domos balance its dual mission of providing investor returns (10.0% LIRR target) while preserving affordable housing during a critical period when many properties are at risk of conversion to market-rate housing.
